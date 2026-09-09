@@ -1,6 +1,11 @@
 import { useCallback, useState } from "react";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { View, Text, StyleSheet } from "react-native";
+import {
+  FlatList,
+  Text,
+  View,
+  StyleSheet,
+} from "react-native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import type { StackNavigationRoutes } from "@/src/routes/App.routes";
@@ -13,26 +18,57 @@ import { getTransactions } from "@/src/services/transactions";
 
 import type { Transaction } from "@/src/interfaces";
 
+import type { DocumentSnapshot } from "firebase/firestore";
+
 export default function HomeScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<StackNavigationRoutes>>();
 
+
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [lastDoc, setLastDoc] = useState<DocumentSnapshot | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  const loadTransactions = useCallback(async () => {
+    try {
+      const data = await getTransactions();
+
+      setTransactions(data.transactions);
+      setLastDoc(data.lastDoc);
+      setHasMore(data.hasMore);
+    } catch (error) {
+      console.log("🔥 ERRO AO BUSCAR TRANSAÇÕES:", error);
+    }
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
-      async function loadTransactions() {
-        try {
-          const data = await getTransactions();
-          setTransactions(data);
-        } catch (error) {
-          console.log("🔥 erro on search transactions:", error);
-        }
-      }
-
       loadTransactions();
-    }, [])
+    }, [loadTransactions])
   );
+
+  async function loadMoreTransactions() {
+    if (!hasMore || loadingMore || !lastDoc) return;
+
+    try {
+      setLoadingMore(true);
+
+      const data = await getTransactions(lastDoc);
+
+      setTransactions((current) => [
+        ...current,
+        ...data.transactions,
+      ]);
+
+      setLastDoc(data.lastDoc);
+      setHasMore(data.hasMore);
+    } catch (error) {
+      console.log("🔥 ERRO AO CARREGAR MAIS:", error);
+    } finally {
+      setLoadingMore(false);
+    }
+  }
 
   const totalIncome = transactions
     .filter((transaction) => transaction.type === "income")
@@ -48,6 +84,7 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Fluxo</Text>
+
         <View style={styles.headerActions}>
           <Button
             variant="secondary"
@@ -55,30 +92,44 @@ export default function HomeScreen() {
           >
             ⚙
           </Button>
+
           <Button
             variant="primary"
-            onPress={() => navigation.navigate("AddTransaction")}
+            onPress={() =>
+              navigation.navigate("AddTransaction")
+            }
           >
             + Nova
           </Button>
         </View>
       </View>
+
       <BalanceCard
         balance={balance}
         totalIncome={totalIncome}
         totalExpense={totalExpense}
       />
-      <TransactionList transactions={transactions} />
+
+      <TransactionList
+        transactions={transactions}
+        loadingMore={loadingMore}
+        onLoadMore={loadMoreTransactions}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    padding: 24,
     flex: 1,
     backgroundColor: "#111111",
+  },
+
+  content: {
     paddingHorizontal: 24,
     paddingTop: 60,
+    paddingBottom: 40,
   },
 
   header: {

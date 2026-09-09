@@ -2,9 +2,12 @@ import {
     addDoc,
     collection,
     getDocs,
+    limit,
     orderBy,
     query,
+    startAfter,
     Timestamp,
+    type DocumentSnapshot,
 } from 'firebase/firestore';
 
 import { auth, db } from './firebase';
@@ -33,22 +36,36 @@ export async function addTransaction(
     };
 }
 
-export async function getTransactions(): Promise<Transaction[]> {
+export async function getTransactions(
+    lastDoc?: DocumentSnapshot,
+) {
     const user = auth.currentUser;
 
     if (!user) {
         throw new Error('Usuário não autenticado.');
     }
 
+    const constraints = [
+        orderBy('date', 'desc'),
+        limit(20),
+        ...(lastDoc ? [startAfter(lastDoc)] : []),
+    ];
+
     const q = query(
         transactionsCollection(user.uid),
-        orderBy('date', 'desc')
+        ...constraints,
     );
 
     const snapshot = await getDocs(q);
 
-    return snapshot.docs.map((doc) => ({
+    const transactions: Transaction[] = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...(doc.data() as Omit<Transaction, 'id'>),
     }));
+
+    return {
+        transactions,
+        lastDoc: snapshot.docs[snapshot.docs.length - 1] ?? null,
+        hasMore: snapshot.docs.length === 20,
+    };
 }

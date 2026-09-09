@@ -1,15 +1,26 @@
-import { StyleSheet, Text, View } from "react-native";
+import {
+    ActivityIndicator,
+    FlatList,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
 
 import type { Transaction } from "@/src/interfaces";
 import { colors, textMuted } from "@/src/theme/colors";
 
 interface TransactionListProps {
     transactions: Transaction[];
+    loadingMore: boolean;
+    onLoadMore: () => void;
 }
 
 export function TransactionList({
     transactions,
+    loadingMore,
+    onLoadMore,
 }: TransactionListProps) {
+
     const formatCurrency = (value: number) =>
         value.toLocaleString("pt-BR", {
             style: "currency",
@@ -22,16 +33,24 @@ export function TransactionList({
                 Transações recentes
             </Text>
 
-            {transactions.length === 0 ? (
-                <Text style={styles.emptyText}>
-                    Nenhuma transação encontrada.
-                </Text>
-            ) : (
-                transactions.map((transaction) => (
-                    <View
-                        key={transaction.id}
-                        style={styles.transactionItem}
-                    >
+            <FlatList
+                data={transactions}
+                keyExtractor={(item) => item.id}
+                showsVerticalScrollIndicator={false}
+                onEndReached={onLoadMore}
+                onEndReachedThreshold={0.5}
+                ListEmptyComponent={
+                    <Text style={styles.emptyText}>
+                        Nenhuma transação encontrada.
+                    </Text>
+                }
+                ListFooterComponent={
+                    loadingMore ? (
+                        <ActivityIndicator style={styles.loading} />
+                    ) : null
+                }
+                renderItem={({ item: transaction }) => (
+                    <View style={styles.transactionItem}>
                         <View style={styles.transactionInfo}>
                             <Text style={styles.transactionDesc}>
                                 {transaction.desc}
@@ -54,14 +73,15 @@ export function TransactionList({
                             {formatCurrency(transaction.amount)}
                         </Text>
                     </View>
-                ))
-            )}
+                )}
+            />
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         marginTop: 32,
     },
 
@@ -114,5 +134,9 @@ const styles = StyleSheet.create({
     emptyText: {
         fontSize: 14,
         color: textMuted(0.65),
+    },
+
+    loading: {
+        marginVertical: 20,
     },
 });
