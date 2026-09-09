@@ -1,6 +1,7 @@
 import {
     ActivityIndicator,
     FlatList,
+    Pressable,
     StyleSheet,
     Text,
     View,
@@ -8,6 +9,11 @@ import {
 
 import type { Transaction } from "@/src/interfaces";
 import { colors, textMuted } from "@/src/theme/colors";
+
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+
+import type { StackNavigationRoutes } from "@/src/routes/App.routes";
 
 interface TransactionListProps {
     transactions: Transaction[];
@@ -20,6 +26,9 @@ export function TransactionList({
     loadingMore,
     onLoadMore,
 }: TransactionListProps) {
+
+    const navigation =
+        useNavigation<NativeStackNavigationProp<StackNavigationRoutes>>();
 
     const formatCurrency = (value: number) =>
         value.toLocaleString("pt-BR", {
@@ -50,7 +59,14 @@ export function TransactionList({
                     ) : null
                 }
                 renderItem={({ item: transaction }) => (
-                    <View style={styles.transactionItem}>
+                    <Pressable
+                        style={styles.transactionItem}
+                        onPress={() =>
+                            navigation.navigate("TransactionDetails", {
+                                transaction,
+                            })
+                        }
+                    >
                         <View style={styles.transactionInfo}>
                             <Text style={styles.transactionDesc}>
                                 {transaction.desc}
@@ -72,7 +88,7 @@ export function TransactionList({
                             {transaction.type === "income" ? "+" : "-"}
                             {formatCurrency(transaction.amount)}
                         </Text>
-                    </View>
+                    </Pressable>
                 )}
             />
         </View>

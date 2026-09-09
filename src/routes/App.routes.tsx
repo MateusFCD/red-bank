@@ -7,6 +7,8 @@ import SettingsScreen from "../screens/Settings";
 import { BottomNav } from "@/src/components/BottomNav";
 import { SignupScreen } from "@/src/screens/SignupScreen";
 import { AddTransactionScreen} from "@/src/screens/Transactions/AddTransactionScreen";
+import { TransactionDetailsScreen } from "@/src/screens/Transactions/TransactionDetailsScreen";
+import { Transaction } from "../interfaces";
 
 export type BottomNavigationRoutes = {
     Home: undefined;
@@ -18,6 +20,9 @@ export type StackNavigationRoutes = {
     Login: undefined;
     SignUp: undefined;
     AddTransaction: undefined;
+    TransactionDetails: {
+        transaction: Transaction;
+    };
 }
 
 const BottomTab = createBottomTabNavigator<BottomNavigationRoutes>();
@@ -29,9 +34,13 @@ function BottomNavigation() {
             <BottomTab.Screen name="Home" component={ HomeScreen }/>
             <BottomTab.Screen name="Settings" component={ SettingsScreen }/>
             <StackNavigation.Screen
-    name="AddTransaction"
-    component={AddTransactionScreen}
-/>
+                name="AddTransaction"
+                component={AddTransactionScreen}
+            />
+            <StackNavigation.Screen
+                name="TransactionDetails"
+                component={TransactionDetailsScreen}
+            />
         </BottomTab.Navigator>
     )
 }

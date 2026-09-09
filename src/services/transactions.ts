@@ -1,6 +1,8 @@
 import {
     addDoc,
     collection,
+    deleteDoc,
+    doc,
     getDocs,
     limit,
     orderBy,
@@ -68,4 +70,23 @@ export async function getTransactions(
         lastDoc: snapshot.docs[snapshot.docs.length - 1] ?? null,
         hasMore: snapshot.docs.length === 20,
     };
+}
+
+export async function deleteTransaction(transactionId: string) {
+    const user = auth.currentUser;
+
+    if (!user) {
+        throw new Error("Usuário não autenticado.");
+    }
+
+    const transactionRef = collection(
+        db,
+        "users",
+        user.uid,
+        "transactions"
+    );
+
+    await deleteDoc(
+        doc(transactionRef, transactionId)
+    );
 }
