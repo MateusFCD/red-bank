@@ -6,6 +6,7 @@ import HomeScreen from "../screens/Home";
 import SettingsScreen from "../screens/Settings";
 import { BottomNav } from "@/src/components/BottomNav";
 import { SignupScreen } from "@/src/screens/SignupScreen";
+import { AddTransactionScreen} from "@/src/screens/Transactions/AddTransactionScreen";
 
 export type BottomNavigationRoutes = {
     Home: undefined;
@@ -16,6 +17,7 @@ export type StackNavigationRoutes = {
     Bottom: undefined;
     Login: undefined;
     SignUp: undefined;
+    AddTransaction: undefined;
 }
 
 const BottomTab = createBottomTabNavigator<BottomNavigationRoutes>();
@@ -26,6 +28,10 @@ function BottomNavigation() {
                              tabBar={ ( props ) => <BottomNav { ...props } /> }>
             <BottomTab.Screen name="Home" component={ HomeScreen }/>
             <BottomTab.Screen name="Settings" component={ SettingsScreen }/>
+            <StackNavigation.Screen
+    name="AddTransaction"
+    component={AddTransactionScreen}
+/>
         </BottomTab.Navigator>
     )
 }
