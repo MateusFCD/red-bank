@@ -7,7 +7,7 @@ export interface Category {
 }
 
 export interface Transaction {
-  id: number;
+  id: string;
   desc: string;
   amount: number;
   type: TransactionType;
