@@ -14,6 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import type { StackNavigationRoutes } from "@/src/routes/App.routes";
+import { formatCurrency, formatDateDisplay } from "../utils/format";
 
 interface TransactionListProps {
     transactions: Transaction[];
@@ -29,12 +30,6 @@ export function TransactionList({
 
     const navigation =
         useNavigation<NativeStackNavigationProp<StackNavigationRoutes>>();
-
-    const formatCurrency = (value: number) =>
-        value.toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-        });
 
     return (
         <View style={styles.container}>
@@ -73,7 +68,7 @@ export function TransactionList({
                             </Text>
 
                             <Text style={styles.transactionCategory}>
-                                {transaction.category} · {transaction.date}
+                                {transaction.category} · {formatDateDisplay(transaction.date)}
                             </Text>
                         </View>
 
