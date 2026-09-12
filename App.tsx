@@ -1,27 +1,42 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
+import "./global.css";
 
-import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
-import './global.css';
+import {
+    Archivo_400Regular,
+    Archivo_600SemiBold,
+    Archivo_800ExtraBold,
+    useFonts,
+} from '@expo-google-fonts/archivo';
+import * as SplashScreen from 'expo-splash-screen';
+
+import { Routes } from "@/src/routes";
+import { useEffect } from "react";
+
+SplashScreen.preventAutoHideAsync();
+
 
 export default function App() {
-  return (
-    
-    <GluestackUIProvider mode="dark">
-      <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-    </GluestackUIProvider>
-  
-  );
-}
+    const [loaded, error] = useFonts({
+        Archivo_400Regular,
+        Archivo_600SemiBold,
+        Archivo_800ExtraBold,
+    });
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+    useEffect(() => {
+        if (loaded || error) {
+            SplashScreen.hideAsync();
+        }
+    }, [loaded, error]);
+
+    if (!loaded && !error) {
+        return null;
+    }
+
+    return (
+        <GluestackUIProvider mode="dark">
+            <StatusBar style="light" translucent/>
+            <Routes/>
+        </GluestackUIProvider>
+    );
+}
