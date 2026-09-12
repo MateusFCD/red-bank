@@ -9,6 +9,7 @@ import {
     query,
     startAfter,
     Timestamp,
+    updateDoc,
     type DocumentSnapshot,
 } from 'firebase/firestore';
 
@@ -89,4 +90,32 @@ export async function deleteTransaction(transactionId: string) {
     await deleteDoc(
         doc(transactionRef, transactionId)
     );
+}
+
+export async function updateTransaction(
+    transactionId: string,
+    transaction: Omit<Transaction, 'id'>
+) {
+    const user = auth.currentUser;
+
+    if (!user) {
+        throw new Error('Usuário não autenticado.');
+    }
+
+    const transactionRef = doc(
+        db,
+        'users',
+        user.uid,
+        'transactions',
+        transactionId
+    );
+
+    await updateDoc(transactionRef, {
+        ...transaction,
+    });
+
+    return {
+        id: transactionId,
+        ...transaction,
+    };
 }

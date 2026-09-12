@@ -48,6 +48,12 @@ export function TransactionDetailsScreen() {
 
     const isIncome = transaction.type === "income";
 
+    async function handleEdit() {
+        return navigation.navigate("AddTransaction", {
+            transaction,
+        });
+    }
+
     async function handleDelete() {
         Alert.alert(
             "Excluir transação",
@@ -144,8 +150,8 @@ export function TransactionDetailsScreen() {
                     </Text>
                 </View>
 
-                <View style={styles.actions}>
-                    <Pressable style={styles.editButton}>
+                <View style={styles.actions} >
+                    <Pressable style={styles.editButton} onPress={handleEdit}>
                         <Text style={styles.editText}>
                             Editar
                         </Text>

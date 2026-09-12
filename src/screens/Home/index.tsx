@@ -96,7 +96,7 @@ export default function HomeScreen() {
           <Button
             variant="primary"
             onPress={() =>
-              navigation.navigate("AddTransaction")
+              navigation.navigate("AddTransaction", { transaction: undefined })
             }
           >
             + Nova

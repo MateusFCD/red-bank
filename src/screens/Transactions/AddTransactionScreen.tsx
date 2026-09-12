@@ -1,6 +1,7 @@
-import { useNavigation } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import {
     KeyboardAvoidingView,
     Modal,
@@ -22,9 +23,10 @@ import type {
 import type { StackNavigationRoutes } from "@/src/routes/App.routes";
 import { colors, fonts, textMuted } from "@/src/theme/colors";
 
-import { addTransaction } from "@/src/services/transactions";
+import { addTransaction, updateTransaction } from "@/src/services/transactions";
 
 import Toast from "react-native-toast-message";
+import { formatDateDisplay } from "@/src/utils/format";
 
 const categories = [
     "Alimentação",
@@ -42,6 +44,12 @@ export function AddTransactionScreen() {
     const navigation =
         useNavigation<NativeStackNavigationProp<StackNavigationRoutes>>();
 
+    const route = useRoute<RouteProp<StackNavigationRoutes, "AddTransaction">>();
+
+    const transaction = route.params?.transaction;
+
+    const isEditing = !!transaction;
+
     const [form, setForm] = useState<TransactionFormState>({
         desc: "",
         amount: "",
@@ -52,9 +60,40 @@ export function AddTransactionScreen() {
         receiptName: "",
     });
 
+    useEffect(() => {
+        if (transaction) {
+            setForm({
+                desc: transaction.desc,
+                amount: transaction.amount.toString().replace(".", ","),
+                type: transaction.type,
+                category: transaction.category,
+                date: transaction.date,
+                receipt: transaction.receipt ?? null,
+                receiptName: "",
+            });
+        }
+    }, [transaction]);
+
     const [errors, setErrors] = useState<TransactionFormErrors>({});
     const [categoryModalVisible, setCategoryModalVisible] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [showDatePicker, setShowDatePicker] = useState(false);
+
+
+    function handleDateChange(
+        event: any,
+        selectedDate?: Date
+    ) {
+        setShowDatePicker(false);
+
+        if (!selectedDate) return;
+
+        const year = selectedDate.getFullYear();
+        const month = String(selectedDate.getMonth() + 1).padStart(2, "0");
+        const day = String(selectedDate.getDate()).padStart(2, "0");
+
+        updateField("date", `${year}-${month}-${day}`);
+    }
 
     function updateField<K extends keyof TransactionFormState>(
         field: K,
@@ -136,7 +175,7 @@ export function AddTransactionScreen() {
                 .replace(/\./g, "")
                 .replace(",", ".");
 
-            const transaction = {
+            const transactionData = {
                 desc: form.desc.trim(),
                 amount: Number(normalizedAmount),
                 type: form.type,
@@ -145,22 +184,32 @@ export function AddTransactionScreen() {
                 receipt: form.receipt,
             };
 
-            await addTransaction(transaction);
+            if (isEditing) {
+                await updateTransaction(transaction.id, transactionData);
 
-            Toast.show({
-                type: "success",
-                text1: "Transação salva!",
-                text2: "Sua transação foi adicionada com sucesso.",
-            });
+                Toast.show({
+                    type: "success",
+                    text1: "Transação atualizada!",
+                    text2: "As alterações foram salvas com sucesso.",
+                });
+            } else {
+                await addTransaction(transactionData);
 
+                Toast.show({
+                    type: "success",
+                    text1: "Transação salva!",
+                    text2: "Sua transação foi adicionada com sucesso.",
+                });
+            }
 
             resetForm();
-
             navigation.goBack();
-        } catch (error) {
 
+        } catch (error) {
             setErrors({
-                desc: "Não foi possível salvar a transação.",
+                desc: isEditing
+                    ? "Não foi possível atualizar a transação."
+                    : "Não foi possível salvar a transação.",
             });
         } finally {
             setLoading(false);
@@ -185,7 +234,9 @@ export function AddTransactionScreen() {
                         ←
                     </Button>
 
-                    <Text style={styles.title}>Nova transação</Text>
+                    <Text style={styles.title}>
+                        {isEditing ? "Editar transação" : "Nova transação"}
+                    </Text>
 
                     <View style={styles.headerSpacer} />
                 </View>
@@ -291,13 +342,27 @@ export function AddTransactionScreen() {
                     <View>
                         <Text style={styles.label}>Data</Text>
 
-                        <Input
-                            placeholder="AAAA-MM-DD"
-                            value={form.date}
-                            onChangeText={(value) =>
-                                updateField("date", value)
-                            }
-                        />
+                        <Pressable onPress={() => setShowDatePicker(true)}>
+                            <View pointerEvents="none">
+                                <Input
+                                    placeholder="Selecione uma data"
+                                    value={formatDateDisplay(form.date)}
+                                />
+                            </View>
+                        </Pressable>
+
+                        {showDatePicker && (
+                            <DateTimePicker
+                                value={
+                                    form.date
+                                        ? new Date(`${form.date}T12:00:00`)
+                                        : new Date()
+                                }
+                                mode="date"
+                                display="default"
+                                onChange={handleDateChange}
+                            />
+                        )}
 
                         {errors.date && (
                             <Text style={styles.error}>
@@ -327,8 +392,10 @@ export function AddTransactionScreen() {
                     style={styles.saveButton}
                     onPress={handleSave}
                 >
-                    Salvar transação
+
+                    {isEditing ? "Salvar alterações" : "Salvar transação"}
                 </Button>
+
             </ScrollView>
 
             <Modal
