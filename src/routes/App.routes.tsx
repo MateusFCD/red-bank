@@ -9,6 +9,7 @@ import { AddTransactionScreen } from "@/src/screens/AddTransactionScreen";
 import { TransactionDetailsScreen } from "@/src/screens/TransactionDetailsScreen";
 import { Transaction } from "../interfaces";
 import { SettingsScreen } from "@/src/screens/SettingsScreen";
+import { colors } from "@/src/theme/colors";
 
 export type BottomNavigationRoutes = {
     Home: undefined;
@@ -31,8 +32,13 @@ const BottomTab = createBottomTabNavigator<BottomNavigationRoutes>();
 
 function BottomNavigation() {
     return (
-        <BottomTab.Navigator screenOptions={ { headerShown: false } }
-                             tabBar={ ( props ) => <BottomNav { ...props } /> }>
+        <BottomTab.Navigator
+            screenOptions={ {
+                headerShown: false,
+                animation: 'shift',
+                sceneStyle: { backgroundColor: colors.bg },
+            } }
+            tabBar={ ( props ) => <BottomNav { ...props } /> }>
             <BottomTab.Screen name="Home" component={ HomeScreen }/>
             <BottomTab.Screen name="Settings" component={ SettingsScreen }/>
             <StackNavigation.Screen
@@ -51,7 +57,13 @@ const StackNavigation = createNativeStackNavigator<StackNavigationRoutes>();
 
 export function AppRoutes() {
     return (
-        <StackNavigation.Navigator screenOptions={ { headerShown: false } } initialRouteName="Login">
+        <StackNavigation.Navigator
+            screenOptions={ {
+                headerShown: false,
+                animation: 'slide_from_right',
+                contentStyle: { backgroundColor: colors.bg },
+            } }
+            initialRouteName="Login">
             <StackNavigation.Screen name="Login" component={ LoginScreen }/>
             <StackNavigation.Screen name="SignUp" component={ SignupScreen }/>
             <StackNavigation.Screen name="Bottom" component={ BottomNavigation }/>

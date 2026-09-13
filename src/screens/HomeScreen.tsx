@@ -13,6 +13,7 @@ import { FilterIcon } from "@/src/components/icons";
 
 import { colors, fonts, radius } from "@/src/theme/colors";
 import { useAppContext } from "@/src/hooks/useAppContext";
+import { ScreenTransition } from "@/src/components/ScreenTransition";
 
 export default function HomeScreen() {
     const navigation =
@@ -27,45 +28,47 @@ export default function HomeScreen() {
     );
 
     return (
-        <View style={ styles.container }>
-            <View style={ styles.header }>
-                <Text style={ styles.title }>Fluxo</Text>
+        <ScreenTransition style={ { backgroundColor: "#111111" } }>
+            <View style={ styles.container }>
+                <View style={ styles.header }>
+                    <Text style={ styles.title }>Fluxo</Text>
 
-                <View style={ styles.headerActions }>
-                    <Pressable style={ styles.filterBtn } onPress={ store.toggleFilters }>
-                        <FilterIcon size={ 17 } color={ colors.text } knobFill={ colors.surface }/>
-                        { store.appliedFilterCount ? (
-                            <View style={ styles.badge }>
-                                <Text style={ styles.badgeText }>{ store.appliedFilterCount }</Text>
-                            </View>
-                        ) : null }
-                    </Pressable>
+                    <View style={ styles.headerActions }>
+                        <Pressable style={ styles.filterBtn } onPress={ store.toggleFilters }>
+                            <FilterIcon size={ 17 } color={ colors.text } knobFill={ colors.surface }/>
+                            { store.appliedFilterCount ? (
+                                <View style={ styles.badge }>
+                                    <Text style={ styles.badgeText }>{ store.appliedFilterCount }</Text>
+                                </View>
+                            ) : null }
+                        </Pressable>
 
-                    <Button
-                        variant="primary"
-                        onPress={ () =>
-                            navigation.navigate("AddTransaction", { transaction: undefined })
-                        }
-                    >
-                        + Nova
-                    </Button>
+                        <Button
+                            variant="primary"
+                            onPress={ () =>
+                                navigation.navigate("AddTransaction", { transaction: undefined })
+                            }
+                        >
+                            + Nova
+                        </Button>
+                    </View>
                 </View>
+
+                <BalanceCard
+                    balance={ store.balance }
+                    totalIncome={ store.totalIncome }
+                    totalExpense={ store.totalExpense }
+                />
+
+                <TransactionList
+                    transactions={ store.filteredTransactions }
+                    loadingMore={ store.loadingMore }
+                    onLoadMore={ store.loadMoreTransactions }
+                />
+
+                <FilterSheet store={ store }/>
             </View>
-
-            <BalanceCard
-                balance={ store.balance }
-                totalIncome={ store.totalIncome }
-                totalExpense={ store.totalExpense }
-            />
-
-            <TransactionList
-                transactions={ store.filteredTransactions }
-                loadingMore={ store.loadingMore }
-                onLoadMore={ store.loadMoreTransactions }
-            />
-
-            <FilterSheet store={ store }/>
-        </View>
+        </ScreenTransition>
     );
 }
 

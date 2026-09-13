@@ -15,6 +15,7 @@ import {
 
 import { Button } from "@/src/components/Button";
 import { Input } from "@/src/components/Input";
+import { ScreenTransition } from "@/src/components/ScreenTransition";
 import type {
     TransactionFormErrors,
     TransactionFormState,
@@ -210,10 +211,11 @@ export function AddTransactionScreen() {
     }
 
     return (
-        <KeyboardAvoidingView
-            style={ styles.flex }
-            behavior={ Platform.OS === "ios" ? "padding" : undefined }
-        >
+        <ScreenTransition style={ { backgroundColor: colors.bg } }>
+            <KeyboardAvoidingView
+                style={ styles.flex }
+                behavior={ Platform.OS === "ios" ? "padding" : undefined }
+            >
             <ScrollView
                 style={ styles.flex }
                 contentContainerStyle={ styles.container }
@@ -429,7 +431,8 @@ export function AddTransactionScreen() {
                     </Pressable>
                 </Pressable>
             </Modal>
-        </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
+        </ScreenTransition>
     );
 }
 

@@ -14,6 +14,7 @@ import type {
 
 import type { StackNavigationRoutes } from "@/src/routes/App.routes";
 import { Alert } from "react-native";
+import { ScreenTransition } from "@/src/components/ScreenTransition";
 import { useAppContext } from "@/src/hooks/useAppContext";
 
 type Navigation = NativeStackNavigationProp<
@@ -91,8 +92,9 @@ export function TransactionDetailsScreen() {
     }
 
     return (
-        <View style={ styles.container }>
-            <View style={ styles.header }>
+        <ScreenTransition style={ { backgroundColor: "#111111" } }>
+            <View style={ styles.container }>
+                <View style={ styles.header }>
                 <Pressable
                     onPress={ () => navigation.goBack() }
                     style={ styles.backButton }
@@ -166,7 +168,8 @@ export function TransactionDetailsScreen() {
                     </Pressable>
                 </View>
             </View>
-        </View>
+            </View>
+        </ScreenTransition>
     );
 }
 
