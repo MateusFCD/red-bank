@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>219345107507-uom1fnno9nqkrpf5r2qeet8k33pl39dn.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.219345107507-uom1fnno9nqkrpf5r2qeet8k33pl39dn</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>219345107507-06e4s0jr0o0om4tde6oijptfilr3722g.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyChygx2dVArlf1wQPUIkvAuJ7znKVwK4oQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>219345107507</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.redbank.app</string>
+	<key>PROJECT_ID</key>
+	<string>redb-bank</string>
+	<key>STORAGE_BUCKET</key>
+	<string>redb-bank.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:219345107507:ios:5737f511c40aa49c964146</string>
+</dict>
+</plist>
