@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '@/src/components/Button';
 import { FormField } from '@/src/components/FormField';
 import { Input } from '@/src/components/Input';
+import { ScreenTransition } from '@/src/components/ScreenTransition';
 import { StackNavigationRoutes } from '@/src/routes/App.routes';
 import { auth } from '@/src/services/firebase';
 import { colors, fonts, textMuted } from '@/src/theme/colors';
@@ -111,74 +112,76 @@ export function LoginScreen() {
 
 
     return (
-        <KeyboardAvoidingView
-            style={styles.flex}
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        >
-            <View style={[styles.container, { paddingTop: insets.top + 40 }]}>
-                <Text style={styles.brand}>Red Bank</Text>
-                <Text style={styles.subtitle}>Entre com sua conta</Text>
+        <ScreenTransition style={{ backgroundColor: colors.bg }}>
+            <KeyboardAvoidingView
+                style={styles.flex}
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            >
+                <View style={[styles.container, { paddingTop: insets.top + 40 }]}>
+                    <Text style={styles.brand}>Red Bank</Text>
+                    <Text style={styles.subtitle}>Entre com sua conta</Text>
 
-                <View style={styles.fields}>
-                    <FormField label="E-mail">
-                        <Input
-                            placeholder="voce@email.com"
-                            keyboardType="email-address"
-                            autoCapitalize="none"
-                            autoComplete="email"
-                            value={email}
-                            onChangeText={setEmail}
-                        />
-                    </FormField>
+                    <View style={styles.fields}>
+                        <FormField label="E-mail">
+                            <Input
+                                placeholder="voce@email.com"
+                                keyboardType="email-address"
+                                autoCapitalize="none"
+                                autoComplete="email"
+                                value={email}
+                                onChangeText={setEmail}
+                            />
+                        </FormField>
 
-                    <FormField label="Senha">
-                        <Input
-                            placeholder="••••••••"
-                            secureTextEntry
-                            autoCapitalize="none"
-                            value={password}
-                            onChangeText={setPassword}
-                        />
-                    </FormField>
+                        <FormField label="Senha">
+                            <Input
+                                placeholder="••••••••"
+                                secureTextEntry
+                                autoCapitalize="none"
+                                value={password}
+                                onChangeText={setPassword}
+                            />
+                        </FormField>
 
-                    <Button variant="ghost" style={styles.forgot} onPress={() => { }}>
-                        Esqueci minha senha
-                    </Button>
+                        <Button variant="ghost" style={styles.forgot} onPress={() => { }}>
+                            Esqueci minha senha
+                        </Button>
 
-                    <Button
-                        variant="primary"
-                        block
-                        style={styles.submit}
-                        onPress={handleLogin}
-                        loading={loading}
-                    >
-                        Entrar
-                    </Button>
+                        <Button
+                            variant="primary"
+                            block
+                            style={styles.submit}
+                            onPress={handleLogin}
+                            loading={loading}
+                        >
+                            Entrar
+                        </Button>
 
-                    <Button
-                        variant="secondary"
-                        block
-                        onPress={handleGoogleLogin}
-                        disabled={loading}
-                    >
-                        Entrar com Google
-                    </Button>
+                        <Button
+                            variant="secondary"
+                            block
+                            onPress={handleGoogleLogin}
+                            disabled={loading}
+                        >
+                            Entrar com Google
+                        </Button>
 
-                    {error ? (
-                        <View style={styles.generalError}>
-                            <Text style={styles.generalErrorText}>{error}</Text>
-                        </View>
-                    ) : null}
+                        {error ? (
+                            <View style={styles.generalError}>
+                                <Text style={styles.generalErrorText}>{error}</Text>
+                            </View>
+                        ) : null}
+                    </View>
+
+                    <View style={styles.flex} />
+                    <Text style={styles.protected}>Protegido pelo Firebase Authentication</Text>
+                    <View style={styles.footer}>
+                        <Text style={styles.footerText}>Não tem conta?</Text>
+                        <Button variant="ghost" onPress={goSignup}>Cadastre-se</Button>
+                    </View>
                 </View>
-
-                <View style={styles.flex} />
-                <Text style={styles.protected}>Protegido pelo Firebase Authentication</Text>
-                <View style={styles.footer}>
-                    <Text style={styles.footerText}>Não tem conta?</Text>
-                    <Button variant="ghost" onPress={goSignup}>Cadastre-se</Button>
-                </View>
-            </View>
-        </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
+        </ScreenTransition>
     );
 }
 

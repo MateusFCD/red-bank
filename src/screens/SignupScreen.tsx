@@ -7,6 +7,7 @@ import { Button } from '@/src/components/Button';
 import { FormField } from '@/src/components/FormField';
 import { Input } from '@/src/components/Input';
 import { ChevronLeftIcon } from '@/src/components/icons';
+import { ScreenTransition } from '@/src/components/ScreenTransition';
 import { colors, fonts, textMuted } from '@/src/theme/colors';
 import { StackNavigationRoutes } from "@/src/routes/App.routes";
 
@@ -19,69 +20,71 @@ export function SignupScreen() {
     };
 
     return (
-        <KeyboardAvoidingView style={ styles.flex } behavior={ Platform.OS === 'ios' ? 'padding' : undefined }>
-            <ScrollView
-                contentContainerStyle={ [styles.container, { paddingTop: insets.top + 40 }] }
-                showsVerticalScrollIndicator={ false }
-                keyboardShouldPersistTaps="handled"
-            >
-                <Pressable style={ styles.back } onPress={ goLogin } hitSlop={ 8 }>
-                    <ChevronLeftIcon size={ 19 } color={ colors.text }/>
-                </Pressable>
+        <ScreenTransition style={ { backgroundColor: colors.bg } }>
+            <KeyboardAvoidingView style={ styles.flex } behavior={ Platform.OS === 'ios' ? 'padding' : undefined }>
+                <ScrollView
+                    contentContainerStyle={ [styles.container, { paddingTop: insets.top + 40 }] }
+                    showsVerticalScrollIndicator={ false }
+                    keyboardShouldPersistTaps="handled"
+                >
+                    <Pressable style={ styles.back } onPress={ goLogin } hitSlop={ 8 }>
+                        <ChevronLeftIcon size={ 19 } color={ colors.text }/>
+                    </Pressable>
 
-                <Text style={ styles.brand }>Criar conta</Text>
-                <Text style={ styles.subtitle }>Leva menos de um minuto</Text>
+                    <Text style={ styles.brand }>Criar conta</Text>
+                    <Text style={ styles.subtitle }>Leva menos de um minuto</Text>
 
-                <View style={ styles.fields }>
-                    <FormField label="Nome">
-                        <Input
-                            placeholder="Seu nome completo"
-                            autoCapitalize="words"
-                        />
-                    </FormField>
+                    <View style={ styles.fields }>
+                        <FormField label="Nome">
+                            <Input
+                                placeholder="Seu nome completo"
+                                autoCapitalize="words"
+                            />
+                        </FormField>
 
-                    <FormField label="E-mail">
-                        <Input
-                            placeholder="voce@email.com"
-                            keyboardType="email-address"
-                            autoCapitalize="none"
-                            autoComplete="email"
-                        />
-                    </FormField>
+                        <FormField label="E-mail">
+                            <Input
+                                placeholder="voce@email.com"
+                                keyboardType="email-address"
+                                autoCapitalize="none"
+                                autoComplete="email"
+                            />
+                        </FormField>
 
-                    <FormField label="Senha">
-                        <Input
-                            placeholder="Mínimo 6 caracteres"
-                            secureTextEntry
-                            autoCapitalize="none"
-                        />
-                    </FormField>
+                        <FormField label="Senha">
+                            <Input
+                                placeholder="Mínimo 6 caracteres"
+                                secureTextEntry
+                                autoCapitalize="none"
+                            />
+                        </FormField>
 
-                    <FormField label="Confirmar senha">
-                        <Input
-                            placeholder="Repita a senha"
-                            secureTextEntry
-                            autoCapitalize="none"
-                        />
-                    </FormField>
+                        <FormField label="Confirmar senha">
+                            <Input
+                                placeholder="Repita a senha"
+                                secureTextEntry
+                                autoCapitalize="none"
+                            />
+                        </FormField>
 
-                    <Button
-                        variant="primary"
-                        block
-                        style={ styles.submit }
-                    >
-                        Criar conta
-                    </Button>
-                </View>
+                        <Button
+                            variant="primary"
+                            block
+                            style={ styles.submit }
+                        >
+                            Criar conta
+                        </Button>
+                    </View>
 
-                <View style={ styles.footer }>
-                    <Text style={ styles.footerText }>Já tem conta?</Text>
-                    <Button variant="ghost" onPress={ goLogin }>
-                        Entrar
-                    </Button>
-                </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+                    <View style={ styles.footer }>
+                        <Text style={ styles.footerText }>Já tem conta?</Text>
+                        <Button variant="ghost" onPress={ goLogin }>
+                            Entrar
+                        </Button>
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </ScreenTransition>
     );
 }
 

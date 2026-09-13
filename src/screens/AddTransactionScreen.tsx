@@ -15,6 +15,7 @@ import {
 
 import { Button } from "@/src/components/Button";
 import { Input } from "@/src/components/Input";
+import { ScreenTransition } from "@/src/components/ScreenTransition";
 import type {
     TransactionFormErrors,
     TransactionFormState,
@@ -23,22 +24,13 @@ import type {
 import type { StackNavigationRoutes } from "@/src/routes/App.routes";
 import { colors, fonts, textMuted } from "@/src/theme/colors";
 
-import { addTransaction, updateTransaction } from "@/src/services/transactions";
+import { CATEGORIES } from "@/src/data/categories";
 
 import Toast from "react-native-toast-message";
 import { formatDateDisplay } from "@/src/utils/format";
+import { useAppContext } from "@/src/hooks/useAppContext";
 
-const categories = [
-    "Alimentação",
-    "Transporte",
-    "Moradia",
-    "Saúde",
-    "Lazer",
-    "Compras",
-    "Educação",
-    "Salário",
-    "Outros",
-];
+const categories = CATEGORIES;
 
 export function AddTransactionScreen() {
     const navigation =
@@ -50,12 +42,14 @@ export function AddTransactionScreen() {
 
     const isEditing = !!transaction;
 
+    const { createTransaction, editTransaction } = useAppContext();
+
     const [form, setForm] = useState<TransactionFormState>({
         desc: "",
         amount: "",
         type: "expense",
         category: "",
-        date: new Date().toISOString().split("T")[0],
+        date: new Date().toISOString().split("T")[ 0 ],
         receipt: null,
         receiptName: "",
     });
@@ -92,29 +86,29 @@ export function AddTransactionScreen() {
         const month = String(selectedDate.getMonth() + 1).padStart(2, "0");
         const day = String(selectedDate.getDate()).padStart(2, "0");
 
-        updateField("date", `${year}-${month}-${day}`);
+        updateField("date", `${ year }-${ month }-${ day }`);
     }
 
     function updateField<K extends keyof TransactionFormState>(
         field: K,
         value: TransactionFormState[K],
     ) {
-        setForm((current) => ({
+        setForm(( current ) => ( {
             ...current,
-            [field]: value,
-        }));
+            [ field ]: value,
+        } ));
 
-        setErrors((current) => ({
+        setErrors(( current ) => ( {
             ...current,
-            [field]: undefined,
-        }));
+            [ field ]: undefined,
+        } ));
     }
 
-    function selectType(type: TransactionType) {
+    function selectType( type: TransactionType ) {
         updateField("type", type);
     }
 
-    function selectCategory(category: string) {
+    function selectCategory( category: string ) {
         updateField("category", category);
         setCategoryModalVisible(false);
     }
@@ -157,7 +151,7 @@ export function AddTransactionScreen() {
             amount: "",
             type: "expense",
             category: "",
-            date: new Date().toISOString().split("T")[0],
+            date: new Date().toISOString().split("T")[ 0 ],
             receipt: null,
             receiptName: "",
         });
@@ -185,7 +179,7 @@ export function AddTransactionScreen() {
             };
 
             if (isEditing) {
-                await updateTransaction(transaction.id, transactionData);
+                await editTransaction(transaction.id, transactionData);
 
                 Toast.show({
                     type: "success",
@@ -193,7 +187,7 @@ export function AddTransactionScreen() {
                     text2: "As alterações foram salvas com sucesso.",
                 });
             } else {
-                await addTransaction(transactionData);
+                await createTransaction(transactionData);
 
                 Toast.show({
                     type: "success",
@@ -217,82 +211,83 @@ export function AddTransactionScreen() {
     }
 
     return (
-        <KeyboardAvoidingView
-            style={styles.flex}
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
-        >
+        <ScreenTransition style={ { backgroundColor: colors.bg } }>
+            <KeyboardAvoidingView
+                style={ styles.flex }
+                behavior={ Platform.OS === "ios" ? "padding" : undefined }
+            >
             <ScrollView
-                style={styles.flex}
-                contentContainerStyle={styles.container}
+                style={ styles.flex }
+                contentContainerStyle={ styles.container }
                 keyboardShouldPersistTaps="handled"
             >
-                <View style={styles.header}>
+                <View style={ styles.header }>
                     <Button
                         variant="ghost"
-                        onPress={() => navigation.goBack()}
+                        onPress={ () => navigation.goBack() }
                     >
                         ←
                     </Button>
 
-                    <Text style={styles.title}>
-                        {isEditing ? "Editar transação" : "Nova transação"}
+                    <Text style={ styles.title }>
+                        { isEditing ? "Editar transação" : "Nova transação" }
                     </Text>
 
-                    <View style={styles.headerSpacer} />
+                    <View style={ styles.headerSpacer }/>
                 </View>
 
-                <View style={styles.fields}>
+                <View style={ styles.fields }>
                     <View>
-                        <Text style={styles.label}>Descrição</Text>
+                        <Text style={ styles.label }>Descrição</Text>
 
                         <Input
                             placeholder="Ex: Supermercado"
-                            value={form.desc}
-                            onChangeText={(value) =>
+                            value={ form.desc }
+                            onChangeText={ ( value ) =>
                                 updateField("desc", value)
                             }
                         />
 
-                        {errors.desc && (
-                            <Text style={styles.error}>
-                                {errors.desc}
+                        { errors.desc && (
+                            <Text style={ styles.error }>
+                                { errors.desc }
                             </Text>
-                        )}
+                        ) }
                     </View>
 
                     <View>
-                        <Text style={styles.label}>Valor</Text>
+                        <Text style={ styles.label }>Valor</Text>
 
-                        <View style={styles.amountContainer}>
-                            <Text style={styles.currency}>R$</Text>
+                        <View style={ styles.amountContainer }>
+                            <Text style={ styles.currency }>R$</Text>
 
                             <Input
-                                style={styles.amountInput}
+                                style={ styles.amountInput }
                                 placeholder="0,00"
                                 keyboardType="decimal-pad"
-                                value={form.amount}
-                                onChangeText={(value) =>
+                                value={ form.amount }
+                                onChangeText={ ( value ) =>
                                     updateField("amount", value)
                                 }
                             />
                         </View>
 
-                        {errors.amount && (
-                            <Text style={styles.error}>
-                                {errors.amount}
+                        { errors.amount && (
+                            <Text style={ styles.error }>
+                                { errors.amount }
                             </Text>
-                        )}
+                        ) }
                     </View>
 
-                    <View style={styles.typeContainer}>
+                    <View style={ styles.typeContainer }>
                         <Button
                             variant={
                                 form.type === "expense"
                                     ? "primary"
                                     : "secondary"
                             }
-                            style={styles.typeButton}
-                            onPress={() => selectType("expense")}
+                            style={ styles.typeButton }
+                            onPress={ () => selectType("expense") }
                         >
                             Despesa
                         </Button>
@@ -303,83 +298,83 @@ export function AddTransactionScreen() {
                                     ? "primary"
                                     : "secondary"
                             }
-                            style={styles.typeButton}
-                            onPress={() => selectType("income")}
+                            style={ styles.typeButton }
+                            onPress={ () => selectType("income") }
                         >
                             Receita
                         </Button>
                     </View>
 
                     <View>
-                        <Text style={styles.label}>Categoria</Text>
+                        <Text style={ styles.label }>Categoria</Text>
 
                         <Pressable
-                            style={styles.select}
-                            onPress={() =>
+                            style={ styles.select }
+                            onPress={ () =>
                                 setCategoryModalVisible(true)
                             }
                         >
                             <Text
-                                style={[
+                                style={ [
                                     styles.selectText,
                                     !form.category &&
                                     styles.placeholder,
-                                ]}
+                                ] }
                             >
-                                {form.category || "Selecione..."}
+                                { form.category || "Selecione..." }
                             </Text>
 
-                            <Text style={styles.arrow}>⌄</Text>
+                            <Text style={ styles.arrow }>⌄</Text>
                         </Pressable>
 
-                        {errors.category && (
-                            <Text style={styles.error}>
-                                {errors.category}
+                        { errors.category && (
+                            <Text style={ styles.error }>
+                                { errors.category }
                             </Text>
-                        )}
+                        ) }
                     </View>
 
                     <View>
-                        <Text style={styles.label}>Data</Text>
+                        <Text style={ styles.label }>Data</Text>
 
-                        <Pressable onPress={() => setShowDatePicker(true)}>
+                        <Pressable onPress={ () => setShowDatePicker(true) }>
                             <View pointerEvents="none">
                                 <Input
                                     placeholder="Selecione uma data"
-                                    value={formatDateDisplay(form.date)}
+                                    value={ formatDateDisplay(form.date) }
                                 />
                             </View>
                         </Pressable>
 
-                        {showDatePicker && (
+                        { showDatePicker && (
                             <DateTimePicker
                                 value={
                                     form.date
-                                        ? new Date(`${form.date}T12:00:00`)
+                                        ? new Date(`${ form.date }T12:00:00`)
                                         : new Date()
                                 }
                                 mode="date"
                                 display="default"
-                                onChange={handleDateChange}
+                                onChange={ handleDateChange }
                             />
-                        )}
+                        ) }
 
-                        {errors.date && (
-                            <Text style={styles.error}>
-                                {errors.date}
+                        { errors.date && (
+                            <Text style={ styles.error }>
+                                { errors.date }
                             </Text>
-                        )}
+                        ) }
                     </View>
 
                     <View>
-                        <Text style={styles.label}>
+                        <Text style={ styles.label }>
                             Recibo (opcional)
                         </Text>
 
-                        <Pressable style={styles.receipt}>
-                            <Text style={styles.receiptIcon}>＋</Text>
+                        <Pressable style={ styles.receipt }>
+                            <Text style={ styles.receiptIcon }>＋</Text>
 
-                            <Text style={styles.receiptText}>
+                            <Text style={ styles.receiptText }>
                                 Adicionar comprovante
                             </Text>
                         </Pressable>
@@ -389,54 +384,55 @@ export function AddTransactionScreen() {
                 <Button
                     variant="primary"
                     block
-                    style={styles.saveButton}
-                    onPress={handleSave}
+                    style={ styles.saveButton }
+                    onPress={ handleSave }
                 >
 
-                    {isEditing ? "Salvar alterações" : "Salvar transação"}
+                    { isEditing ? "Salvar alterações" : "Salvar transação" }
                 </Button>
 
             </ScrollView>
 
             <Modal
-                visible={categoryModalVisible}
+                visible={ categoryModalVisible }
                 transparent
                 animationType="slide"
-                onRequestClose={() =>
+                onRequestClose={ () =>
                     setCategoryModalVisible(false)
                 }
             >
                 <Pressable
-                    style={styles.modalOverlay}
-                    onPress={() =>
+                    style={ styles.modalOverlay }
+                    onPress={ () =>
                         setCategoryModalVisible(false)
                     }
                 >
                     <Pressable
-                        style={styles.modal}
-                        onPress={(event) => event.stopPropagation()}
+                        style={ styles.modal }
+                        onPress={ ( event ) => event.stopPropagation() }
                     >
-                        <Text style={styles.modalTitle}>
+                        <Text style={ styles.modalTitle }>
                             Escolha uma categoria
                         </Text>
 
-                        {categories.map((category) => (
+                        { categories.map(( category ) => (
                             <Pressable
-                                key={category}
-                                style={styles.categoryOption}
-                                onPress={() =>
+                                key={ category }
+                                style={ styles.categoryOption }
+                                onPress={ () =>
                                     selectCategory(category)
                                 }
                             >
-                                <Text style={styles.categoryText}>
-                                    {category}
+                                <Text style={ styles.categoryText }>
+                                    { category }
                                 </Text>
                             </Pressable>
-                        ))}
+                        )) }
                     </Pressable>
                 </Pressable>
             </Modal>
-        </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
+        </ScreenTransition>
     );
 }
 
