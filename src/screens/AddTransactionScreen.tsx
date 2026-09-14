@@ -2,7 +2,9 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useEffect, useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import * as ImagePicker from 'expo-image-picker';
 import {
+    Image,
     KeyboardAvoidingView,
     Modal,
     Platform,
@@ -62,7 +64,7 @@ export function AddTransactionScreen() {
                 type: transaction.type,
                 category: transaction.category,
                 date: transaction.date,
-                receipt: transaction.receipt ?? null,
+                receipt: transaction.receipt,
                 receiptName: "",
             });
         }
@@ -209,6 +211,28 @@ export function AddTransactionScreen() {
             setLoading(false);
         }
     }
+
+    const handlePickImage = async () => {
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (!permissionResult.granted) {
+            alert("É necessário permitir o acesso à galeria.");
+            return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            quality: 0.8,
+            base64: true,
+        });
+
+        if (!result.canceled) {
+            const asset = result.assets[0];
+            const base64Image = `data:${asset.mimeType || 'image/jpeg'};base64,${asset.base64}`;
+            setForm(prev => ({ ...prev, receipt: base64Image }));
+        }
+    };
 
     return (
         <ScreenTransition style={ { backgroundColor: colors.bg } }>
@@ -365,19 +389,32 @@ export function AddTransactionScreen() {
                             </Text>
                         ) }
                     </View>
-
                     <View>
-                        <Text style={ styles.label }>
+                        <Text style={styles.label}>
                             Recibo (opcional)
                         </Text>
 
-                        <Pressable style={ styles.receipt }>
-                            <Text style={ styles.receiptIcon }>＋</Text>
-
-                            <Text style={ styles.receiptText }>
-                                Adicionar comprovante
-                            </Text>
-                        </Pressable>
+                        {!form.receipt ? (
+                            <Pressable style={styles.receipt} onPress={handlePickImage}>
+                                <Text style={styles.receiptIcon}>＋</Text>
+                                <Text style={styles.receiptText}>
+                                    Adicionar comprovante
+                                </Text>
+                            </Pressable>
+                        ) : (
+                            <Pressable onPress={handlePickImage}>
+                                <Image
+                                    source={{ uri: form.receipt }}
+                                    style={{
+                                        width: 360,
+                                        borderRadius: 8,
+                                        aspectRatio: 1,
+                                        marginTop: 30,
+                                    }}
+                                    resizeMode="contain"
+                                />
+                            </Pressable>
+                        )}
                     </View>
                 </View>
 

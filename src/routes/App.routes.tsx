@@ -10,10 +10,12 @@ import { TransactionDetailsScreen } from "@/src/screens/TransactionDetailsScreen
 import { Transaction } from "../interfaces";
 import { SettingsScreen } from "@/src/screens/SettingsScreen";
 import { colors } from "@/src/theme/colors";
+import DashboardScreen from "../screens/Dashboard/index";
 
 export type BottomNavigationRoutes = {
     Home: undefined;
     Settings: undefined;
+    Dashboard: undefined;
 }
 
 export type StackNavigationRoutes = {
@@ -41,6 +43,7 @@ function BottomNavigation() {
             tabBar={ ( props ) => <BottomNav { ...props } /> }>
             <BottomTab.Screen name="Home" component={ HomeScreen }/>
             <BottomTab.Screen name="Settings" component={ SettingsScreen }/>
+            <BottomTab.Screen name="Dashboard" component={ DashboardScreen } />
             <StackNavigation.Screen
                 name="AddTransaction"
                 component={ AddTransactionScreen }

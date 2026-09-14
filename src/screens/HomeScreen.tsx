@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -31,7 +31,12 @@ export default function HomeScreen() {
         <ScreenTransition style={ { backgroundColor: "#111111" } }>
             <View style={ styles.container }>
                 <View style={ styles.header }>
-                    <Text style={ styles.title }>Fluxo</Text>
+                    <Text style={styles.title}>
+                        Olá
+                        {store.user?.displayName
+                            ? `, ${store.user.displayName.trim().split(" ")[0]}`
+                            : ""}
+                    </Text>
 
                     <View style={ styles.headerActions }>
                         <Pressable style={ styles.filterBtn } onPress={ store.toggleFilters }>

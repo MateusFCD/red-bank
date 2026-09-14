@@ -2,7 +2,7 @@ import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { HomeIcon, SettingsIcon } from '@/src/components/icons';
+import { HomeIcon, SettingsIcon, DashboardIcon } from '@/src/components/icons';
 import { colors, fonts, textMuted } from '@/src/theme/colors';
 
 export function BottomNav( { state, navigation }: BottomTabBarProps ) {
@@ -10,12 +10,17 @@ export function BottomNav( { state, navigation }: BottomTabBarProps ) {
     const activeRoute = state.routeNames[ state.index ];
     const homeColor = activeRoute === 'Home' ? colors.accent300 : textMuted(0.55);
     const settingsColor = activeRoute === 'Settings' ? colors.accent300 : textMuted(0.55);
+    const DashboardColor = activeRoute === 'Dashboard' ? colors.accent300 : textMuted(0.55);
 
     return (
         <View style={ [styles.wrap, { paddingBottom: Math.max(insets.bottom, 10) + 16 }] }>
             <Pressable style={ styles.item } onPress={ () => navigation.navigate('Home') } hitSlop={ 8 }>
                 <HomeIcon size={ 20 } color={ homeColor }/>
                 <Text style={ [styles.label, { color: homeColor }] }>Home</Text>
+            </Pressable>
+            <Pressable style={ styles.item } onPress={ () => navigation.navigate('Dashboard') } hitSlop={ 8 }>
+                <DashboardIcon size={ 20 } color={ DashboardColor }/>
+                <Text style={ [styles.label, { color: DashboardColor }] }>Dashboard</Text>
             </Pressable>
             <Pressable style={ styles.item } onPress={ () => navigation.navigate('Settings') } hitSlop={ 8 }>
                 <SettingsIcon size={ 20 } color={ settingsColor }/>

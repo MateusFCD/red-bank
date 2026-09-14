@@ -138,3 +138,50 @@ export function SettingsIcon({ size = 20, color, strokeWidth = 2 }: IconProps) {
     </Svg>
   );
 }
+
+export function DashboardIcon({
+  size = 20,
+  color,
+  strokeWidth = 2,
+}: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path
+        d="M4 4v16h17"
+        stroke={color}
+        {...base(strokeWidth)}
+      />
+
+      <Path
+        d="M7 16v-4"
+        stroke={color}
+        {...base(strokeWidth)}
+      />
+
+      <Path
+        d="M11 16V9"
+        stroke={color}
+        {...base(strokeWidth)}
+      />
+
+      <Path
+        d="M15 16V6"
+        stroke={color}
+        {...base(strokeWidth)}
+      />
+
+      <Path
+        d="M6 11l4-3 4 2 5-6"
+        stroke={color}
+        {...base(strokeWidth)}
+      />
+
+      <Circle
+        cx={19}
+        cy={4}
+        r={1}
+        fill={color}
+      />
+    </Svg>
+  );
+}
