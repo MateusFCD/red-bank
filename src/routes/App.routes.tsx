@@ -10,7 +10,7 @@ import { TransactionDetailsScreen } from "@/src/screens/TransactionDetailsScreen
 import { Transaction } from "../interfaces";
 import { SettingsScreen } from "@/src/screens/SettingsScreen";
 import { colors } from "@/src/theme/colors";
-import DashboardScreen from "../screens/Dashboard/index";
+import DashboardScreen from "../screens/DashboardScreen";
 
 export type BottomNavigationRoutes = {
     Home: undefined;

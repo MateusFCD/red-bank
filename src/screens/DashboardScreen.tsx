@@ -1,4 +1,5 @@
 import { useAppContext } from "@/src/hooks/useAppContext";
+import { colors } from "@/src/theme/colors";
 import { useState } from "react";
 import {
   Dimensions,
@@ -648,13 +649,13 @@ const styles = StyleSheet.create({
 
   monthText: {
     color: COLORS.text,
-    fontSize: 10,
+    fontSize: 18,
     fontWeight: "700",
   },
 
   chevron: {
     color: COLORS.orange,
-    fontSize: 13,
+    fontSize: 18,
     marginLeft: 4,
   },
 
@@ -949,7 +950,7 @@ const styles = StyleSheet.create({
   modalContent: {
     width: "80%",
     maxHeight: "50%",
-    backgroundColor: "#FFF",
+    backgroundColor: colors.bg,
     borderRadius: 12,
     paddingVertical: 8,
     elevation: 5,
@@ -963,14 +964,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   modalItemSelected: {
-    backgroundColor: "#F0F0F0",
+    backgroundColor: colors.bg,
   },
   modalItemText: {
-    fontSize: 16,
-    color: "#333",
+    fontSize: 18,
+    color: "#FFF",
   },
   modalItemTextSelected: {
     fontWeight: "bold",
-    color: "#007AFF",
+    color: "#FF3B1F",
   },
 });
