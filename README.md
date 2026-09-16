@@ -17,4 +17,4 @@
 npm install
 <br>Execute o projeto:
 npx expo start
-<br>Depois, abra pelo Expo Go ou em um emulador Android/iOS.
+<br>Depois, abra pelo emulador Android/iOS.
