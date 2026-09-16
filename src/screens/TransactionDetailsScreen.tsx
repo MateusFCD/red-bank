@@ -14,7 +14,8 @@ import type {
 
 import type { StackNavigationRoutes } from "@/src/routes/App.routes";
 import { Alert } from "react-native";
-import { deleteTransaction } from "@/src/services/transactions";
+import { ScreenTransition } from "@/src/components/ScreenTransition";
+import { useAppContext } from "@/src/hooks/useAppContext";
 
 type Navigation = NativeStackNavigationProp<
     StackNavigationRoutes,
@@ -30,16 +31,18 @@ export function TransactionDetailsScreen() {
     const navigation = useNavigation<Navigation>();
     const route = useRoute<DetailsRoute>();
 
+    const { removeTransaction } = useAppContext();
+
     const { transaction } = route.params;
 
-    const formatCurrency = (value: number) =>
+    const formatCurrency = ( value: number ) =>
         value.toLocaleString("pt-BR", {
             style: "currency",
             currency: "BRL",
         });
 
     const formattedDate = new Date(
-        `${transaction.date}T12:00:00`
+        `${ transaction.date }T12:00:00`
     ).toLocaleDateString("pt-BR", {
         day: "2-digit",
         month: "long",
@@ -68,7 +71,7 @@ export function TransactionDetailsScreen() {
                     style: "destructive",
                     onPress: async () => {
                         try {
-                            await deleteTransaction(transaction.id);
+                            await removeTransaction(transaction.id);
 
                             navigation.goBack();
                         } catch (error) {
@@ -89,82 +92,84 @@ export function TransactionDetailsScreen() {
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
+        <ScreenTransition style={ { backgroundColor: "#111111" } }>
+            <View style={ styles.container }>
+                <View style={ styles.header }>
                 <Pressable
-                    onPress={() => navigation.goBack()}
-                    style={styles.backButton}
+                    onPress={ () => navigation.goBack() }
+                    style={ styles.backButton }
                 >
-                    <Text style={styles.backIcon}>‹</Text>
+                    <Text style={ styles.backIcon }>‹</Text>
                 </Pressable>
 
-                <Text style={styles.title}>
+                <Text style={ styles.title }>
                     Detalhes
                 </Text>
             </View>
 
-            <View style={styles.divider} />
+            <View style={ styles.divider }/>
 
-            <View style={styles.content}>
-                <View style={styles.transactionCard}>
-                    <View style={styles.categoryBadge}>
-                        <Text style={styles.categoryText}>
-                            {transaction.category}
+            <View style={ styles.content }>
+                <View style={ styles.transactionCard }>
+                    <View style={ styles.categoryBadge }>
+                        <Text style={ styles.categoryText }>
+                            { transaction.category }
                         </Text>
                     </View>
 
                     <Text
-                        style={[
+                        style={ [
                             styles.amount,
                             isIncome
                                 ? styles.income
                                 : styles.expense,
-                        ]}
+                        ] }
                     >
-                        {isIncome ? "+" : "-"}{" "}
-                        {formatCurrency(transaction.amount)}
+                        { isIncome ? "+" : "-" }{ " " }
+                        { formatCurrency(transaction.amount) }
                     </Text>
 
-                    <Text style={styles.description}>
-                        {transaction.desc}
+                    <Text style={ styles.description }>
+                        { transaction.desc }
                     </Text>
                 </View>
 
-                <View style={styles.infoRow}>
-                    <Text style={styles.infoLabel}>
+                <View style={ styles.infoRow }>
+                    <Text style={ styles.infoLabel }>
                         Data
                     </Text>
 
-                    <Text style={styles.infoValue}>
-                        {formattedDate}
+                    <Text style={ styles.infoValue }>
+                        { formattedDate }
                     </Text>
                 </View>
 
-                <View style={styles.infoRow}>
-                    <Text style={styles.infoLabel}>
+                <View style={ styles.infoRow }>
+                    <Text style={ styles.infoLabel }>
                         Tipo
                     </Text>
 
-                    <Text style={styles.infoValue}>
-                        {isIncome ? "Receita" : "Despesa"}
+                    <Text style={ styles.infoValue }>
+                        { isIncome ? "Receita" : "Despesa" }
                     </Text>
                 </View>
 
-                <View style={styles.actions} >
-                    <Pressable style={styles.editButton} onPress={handleEdit}>
-                        <Text style={styles.editText}>
+                <View style={ styles.actions }>
+                    <Pressable style={ styles.editButton } onPress={ handleEdit }>
+                        <Text style={ styles.editText }>
                             Editar
                         </Text>
                     </Pressable>
 
-                    <Pressable style={styles.deleteButton} onPress={handleDelete}>
-                        <Text style={styles.deleteText}>
+                    <Pressable style={ styles.deleteButton } onPress={ handleDelete }>
+                        <Text style={ styles.deleteText }>
                             Excluir
                         </Text>
                     </Pressable>
                 </View>
             </View>
-        </View>
+            </View>
+        </ScreenTransition>
     );
 }
 
