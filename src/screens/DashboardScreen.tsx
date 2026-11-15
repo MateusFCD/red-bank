@@ -1,32 +1,18 @@
 import { useAppContext } from "@/src/hooks/useAppContext";
-import { colors } from "@/src/theme/colors";
 import { useState } from "react";
+import { cn } from "@/src/utils/cn";
 import {
   Dimensions,
   FlatList,
   Modal,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
 import Svg, { Circle, G } from "react-native-svg";
 
 const { width } = Dimensions.get("window");
-
-const COLORS = {
-  background: "#121212",
-  card: "#1C1A1A",
-  cardLight: "#242121",
-  orange: "#FF3B1F",
-  orangeSoft: "#FF684F",
-  white: "#F5F5F5",
-  text: "#D8D5D5",
-  muted: "#8C8989",
-  border: "#2C2929",
-  green: "#45D483",
-};
 
 type TransactionType = "income" | "expense";
 
@@ -147,7 +133,7 @@ function DonutChart({
   let offset = 0;
 
   return (
-    <View style={styles.chartContainer}>
+    <View className="justify-center items-center">
       <Svg width={size} height={size}>
         <G transform={`rotate(-90 ${size / 2} ${size / 2})`}>
           <Circle
@@ -181,9 +167,9 @@ function DonutChart({
         </G>
       </Svg>
 
-      <View style={styles.chartCenter}>
-        <Text style={styles.chartLabel}>TOTAL</Text>
-        <Text style={styles.chartValue}>R${formatCurrency(Number(totalGastos.toFixed(2)))}</Text>
+      <View className="absolute items-center">
+        <Text className="text-[#8C8989] text-[8px] font-bold tracking-[1px]">TOTAL</Text>
+        <Text className="text-[#F5F5F5] text-[12px] font-extrabold mt-0.5">R${formatCurrency(Number(totalGastos.toFixed(2)))}</Text>
       </View>
     </View>
   );
@@ -193,28 +179,27 @@ function FinancialChart({ data }: { data: FinancialSummaryItem[] }) {
   const maxValue = Math.max(...data.map((item) => item.value), 1);
 
   return (
-    <View style={styles.financialChart}>
+    <View className="w-full">
       {data.map((item) => {
         const percentage = item.value < 0 ? 0 : item.value / maxValue;
 
         return (
-          <View key={item.label} style={styles.financialRow}>
-            <View style={styles.financialHeader}>
-              <Text style={styles.financialLabel}>{item.label}</Text>
-              <Text style={[styles.financialValue, { color: item.color }]}>
+          <View key={item.label} className="mb-[17px]">
+            <View className="flex-row justify-between items-center mb-[7px]">
+              <Text className="text-[#D8D5D5] text-[11px] font-bold">{item.label}</Text>
+              <Text className="text-[11px] font-extrabold" style={{ color: item.color }}>
                 {formatCurrency(item.value)}
               </Text>
             </View>
 
-            <View style={styles.barBackground}>
+            <View className="w-full h-2.5 bg-[#302D2D] rounded-[10px] overflow-hidden">
               <View
-                style={[
-                  styles.bar,
-                  {
-                    width: `${percentage * 100}%`,
-                    backgroundColor: item.color,
-                  },
-                ]}
+                className="h-full rounded-[10px]"
+                // Largura e cor dependem dos dados do mês.
+                style={{
+                  width: `${percentage * 100}%`,
+                  backgroundColor: item.color,
+                }}
               />
             </View>
           </View>
@@ -234,21 +219,17 @@ function CategoryRow({
   color: string;
 }) {
   return (
-    <View style={styles.categoryRow}>
-      <View style={styles.categoryName}>
+    <View className="flex-row justify-between items-center mb-[9px]">
+      <View className="flex-row items-center flex-1">
         <View
-          style={[
-            styles.categoryDot,
-            {
-              backgroundColor: color,
-            },
-          ]}
+          className="w-[7px] h-[7px] rounded-[4px] mr-[7px]"
+          style={{ backgroundColor: color }}
         />
 
-        <Text style={styles.categoryText}>{name}</Text>
+        <Text className="text-[#D8D5D5] text-[10px] font-semibold">{name}</Text>
       </View>
 
-      <Text style={styles.categoryPercentage}>{percentage}%</Text>
+      <Text className="text-[#F5F5F5] text-[10px] font-extrabold">{percentage}%</Text>
     </View>
   );
 }
@@ -307,18 +288,18 @@ export default function HomeScreen() {
     monthsList.find((m) => m.value === selectedMonth)?.label || "Selecione";
 
   return (
-    <View style={styles.screen}>
+    <View className="flex-1 bg-[#121212]">
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerClassName="px-6 pt-7"
       >
-        <View style={styles.topBar}>
+        <View className="w-full items-end mb-[15px]">
           <Pressable
-            style={styles.monthSelector}
+            className="flex-row items-center bg-[#242121] px-2.5 py-1.5 rounded-[8px] self-end"
             onPress={() => setModalVisible(true)}
           >
-            <Text style={styles.monthText}>{currentMonthLabel}</Text>
-            <Text style={styles.chevron}>⌄</Text>
+            <Text className="text-[#D8D5D5] text-[18px] font-bold">{currentMonthLabel}</Text>
+            <Text className="text-[#FF3B1F] text-[18px] ml-1">⌄</Text>
           </Pressable>
 
           <Modal
@@ -328,31 +309,31 @@ export default function HomeScreen() {
             onRequestClose={() => setModalVisible(false)}
           >
             <Pressable
-              style={styles.modalOverlay}
+              className="flex-1 bg-[rgba(0,0,0,0.4)] justify-center items-center"
               onPress={() => setModalVisible(false)}
             >
-              <View style={styles.modalContent}>
+              <View className="w-4/5 max-h-[50%] bg-app rounded-[12px] py-2 shadow-modal">
                 <FlatList
                   data={monthsList}
                   keyExtractor={(item) => String(item.value)}
                   renderItem={({ item }) => (
                     <Pressable
-                      style={[
-                        styles.modalItem,
-                        item.value === selectedMonth &&
-                          styles.modalItemSelected,
-                      ]}
+                      className={cn(
+                        "py-3.5 px-5",
+                        item.value === selectedMonth && "bg-app",
+                      )}
                       onPress={() => {
                         setSelectedMonth(item.value);
                         setModalVisible(false);
                       }}
                     >
                       <Text
-                        style={[
-                          styles.modalItemText,
-                          item.value === selectedMonth &&
-                            styles.modalItemTextSelected,
-                        ]}
+                        className={cn(
+                          "text-[18px]",
+                          item.value === selectedMonth
+                            ? "font-bold text-[#FF3B1F]"
+                            : "text-white",
+                        )}
                       >
                         {item.label}
                       </Text>
@@ -364,20 +345,20 @@ export default function HomeScreen() {
           </Modal>
         </View>
 
-        <View style={styles.card}>
-          <View style={styles.sectionHeader}>
+        <View className="bg-[#1C1A1A] rounded-[20px] border border-[#2C2929] p-[17px] mb-3">
+          <View className="flex-row items-center justify-between mb-[18px]">
             <View>
-              <Text style={styles.sectionTitle}>Gastos por categoria</Text>
-              <Text style={styles.sectionSubtitle}>
+              <Text className="text-[#F5F5F5] text-[24px] font-extrabold">Gastos por categoria</Text>
+              <Text className="text-[#8C8989] text-[14px] mt-[3px]">
                 Distribuição das suas despesas
               </Text>
             </View>
           </View>
 
-          <View style={styles.chartArea}>
+          <View className="flex-row items-center">
             <DonutChart categories={categories} totalGastos={totalGastos} />
 
-            <View style={styles.legend}>
+            <View className="flex-1 ml-2.5">
               {categories.map((category) => (
                 <CategoryRow
                   key={category.name}
@@ -390,11 +371,11 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        <View style={styles.card}>
-          <View style={styles.sectionHeader}>
+        <View className="bg-[#1C1A1A] rounded-[20px] border border-[#2C2929] p-[17px] mb-3">
+          <View className="flex-row items-center justify-between mb-[18px]">
             <View>
-              <Text style={styles.sectionTitle}>Resumo financeiro</Text>
-              <Text style={styles.sectionSubtitle}>
+              <Text className="text-[#F5F5F5] text-[24px] font-extrabold">Resumo financeiro</Text>
+              <Text className="text-[#8C8989] text-[14px] mt-[3px]">
                 Entradas, gastos e saldo do mês
               </Text>
             </View>
@@ -403,36 +384,36 @@ export default function HomeScreen() {
           <FinancialChart data={data} />
         </View>
 
-        <View style={styles.incomeCard}>
-          <View style={styles.incomeIcon}>
-            <Text style={styles.incomeIconText}>$</Text>
+        <View className="flex-row bg-[#101A16] border-[#13a0653a] border rounded-[20px] p-[17px] mb-3">
+          <View className="bg-[#123D2D] w-[34px] h-[34px] rounded-[17px] justify-center items-center mr-3">
+            <Text className="text-[#13A066] text-[16px] font-semibold leading-[32px]">$</Text>
           </View>
 
-          <View style={styles.incomeContent}>
-            <Text style={styles.incomeTitle}>Receitas do mês</Text>
-            <Text style={styles.incomeText}>
+          <View className="flex-1">
+            <Text className="text-[#FFFFFF] text-[18px] font-bold mb-[5px]">Receitas do mês</Text>
+            <Text className="text-[#A8A8A8] text-[13px] leading-[18px] mb-3">
               Entradas de dinheiro recebidas neste mês.
             </Text>
 
-            <View style={styles.incomeHighlight}>
-              <Text style={styles.incomeHighlightText}>
+            <View className="bg-[#142A21] rounded-[8px] py-2.5 px-3">
+              <Text className="text-[#62C58C] text-[11px] font-semibold leading-[16px]">
                 Você recebeu R${formatCurrency(Number(totalEntradas.toFixed(2)))} este mês.
               </Text>
             </View>
           </View>
         </View>
 
-        <View style={styles.analysisCard}>
-          <View style={styles.analysisIcon}>
-            <Text style={styles.analysisIconText}>✦</Text>
+        <View className="flex-row bg-[#201817] border border-[#4B2420] rounded-[20px] p-[17px] mb-5">
+          <View className="w-[34px] h-[34px] rounded-[17px] bg-[#3A211E] justify-center items-center mr-3">
+            <Text className="text-[#FF3B1F] text-[18px]">✦</Text>
           </View>
 
-          <View style={styles.analysisContent}>
-            <Text style={styles.analysisTitle}>Análise financeira</Text>
-            <Text style={styles.analysisText}>{getAnalysisMessage(saldo)}</Text>
+          <View className="flex-1">
+            <Text className="text-[#F5F5F5] text-[18px] font-extrabold mb-1.5">Análise financeira</Text>
+            <Text className="text-[#BEB8B7] text-[13px] leading-[18px]">{getAnalysisMessage(saldo)}</Text>
 
-            <View style={styles.analysisHighlight}>
-              <Text style={styles.analysisHighlightText}>
+            <View className="mt-3 bg-[#2B1D1A] rounded-[10px] p-2.5">
+              <Text className="text-[#FFB2A5] text-[11px] font-bold">
                 {saldo >= 0
                   ? `Você economizou R$${formatCurrency(Number(saldo.toFixed(2)))} este mês.`
                   : `Você fechou o mês com um déficit de R$${formatCurrency(Number(Math.abs(saldo).toFixed(2)))}.`}
@@ -444,534 +425,3 @@ export default function HomeScreen() {
     </View>
   );
 }
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-
-  scrollContent: {
-    paddingHorizontal: 24,
-    paddingTop: 28,
-  },
-
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 22,
-  },
-
-  eyebrow: {
-    color: COLORS.orange,
-    fontSize: 11,
-    fontWeight: "800",
-    letterSpacing: 1.3,
-    marginBottom: 5,
-  },
-
-  title: {
-    color: COLORS.white,
-    fontSize: 25,
-    fontWeight: "800",
-  },
-
-  avatar: {
-    width: 43,
-    height: 43,
-    borderRadius: 22,
-    backgroundColor: COLORS.orange,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  avatarText: {
-    color: "#FFF",
-    fontSize: 17,
-    fontWeight: "800",
-  },
-
-  balanceCard: {
-    backgroundColor: COLORS.orange,
-    borderRadius: 22,
-    padding: 20,
-    marginBottom: 12,
-  },
-
-  balanceHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-
-  balanceLabel: {
-    color: "#FFE4DF",
-    fontSize: 11,
-    fontWeight: "800",
-    letterSpacing: 1,
-  },
-
-  statusBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.14)",
-    paddingHorizontal: 9,
-    paddingVertical: 5,
-    borderRadius: 20,
-  },
-
-  statusDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: "#B9FFD7",
-    marginRight: 5,
-  },
-
-  statusText: {
-    color: "#FFF",
-    fontSize: 10,
-    fontWeight: "600",
-  },
-
-  balance: {
-    color: "#FFF",
-    fontSize: 31,
-    fontWeight: "800",
-    marginTop: 9,
-    marginBottom: 22,
-  },
-
-  balanceFooter: {
-    flexDirection: "row",
-    gap: 45,
-  },
-
-  balanceSmallLabel: {
-    color: "#FFD8D0",
-    fontSize: 9,
-    fontWeight: "800",
-    letterSpacing: 0.8,
-    marginBottom: 3,
-  },
-
-  balanceIncome: {
-    color: "#FFF",
-    fontSize: 14,
-    fontWeight: "700",
-  },
-
-  balanceExpense: {
-    color: "#FFF",
-    fontSize: 14,
-    fontWeight: "700",
-  },
-
-  metrics: {
-    flexDirection: "row",
-    gap: 12,
-    marginBottom: 12,
-  },
-
-  metricCard: {
-    flex: 1,
-    backgroundColor: COLORS.card,
-    borderRadius: 17,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    padding: 15,
-  },
-
-  metricTitle: {
-    color: COLORS.muted,
-    fontSize: 10,
-    fontWeight: "700",
-    marginBottom: 8,
-  },
-
-  metricValue: {
-    color: COLORS.white,
-    fontSize: 17,
-    fontWeight: "800",
-  },
-
-  greenText: {
-    color: COLORS.green,
-  },
-
-  orangeText: {
-    color: COLORS.orange,
-  },
-
-  card: {
-    backgroundColor: COLORS.card,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    padding: 17,
-    marginBottom: 12,
-  },
-
-  sectionHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 18,
-  },
-
-  sectionTitle: {
-    color: COLORS.white,
-    fontSize: 24,
-    fontWeight: "800",
-  },
-
-  sectionSubtitle: {
-    color: COLORS.muted,
-    fontSize: 14,
-    marginTop: 3,
-  },
-
-  topBar: {
-    width: "100%",
-    alignItems: "flex-end",
-    marginBottom: 15,
-  },
-
-  monthSelector: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.cardLight,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
-    alignSelf: "flex-end",
-  },
-
-  monthText: {
-    color: COLORS.text,
-    fontSize: 18,
-    fontWeight: "700",
-  },
-
-  chevron: {
-    color: COLORS.orange,
-    fontSize: 18,
-    marginLeft: 4,
-  },
-
-  chartArea: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-
-  chartContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  chartCenter: {
-    position: "absolute",
-    alignItems: "center",
-  },
-
-  chartLabel: {
-    color: COLORS.muted,
-    fontSize: 8,
-    fontWeight: "700",
-    letterSpacing: 1,
-  },
-
-  chartValue: {
-    color: COLORS.white,
-    fontSize: 12,
-    fontWeight: "800",
-    marginTop: 2,
-  },
-
-  legend: {
-    flex: 1,
-    marginLeft: 10,
-  },
-
-  categoryRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 9,
-  },
-
-  categoryName: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-  },
-
-  categoryDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-    marginRight: 7,
-  },
-
-  categoryText: {
-    color: COLORS.text,
-    fontSize: 10,
-    fontWeight: "600",
-  },
-
-  categoryPercentage: {
-    color: COLORS.white,
-    fontSize: 10,
-    fontWeight: "800",
-  },
-
-  analysisCard: {
-    flexDirection: "row",
-    backgroundColor: "#201817",
-    borderWidth: 1,
-    borderColor: "#4B2420",
-    borderRadius: 20,
-    padding: 17,
-    marginBottom: 20,
-  },
-
-  analysisIcon: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: "#3A211E",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-
-  analysisIconText: {
-    color: COLORS.orange,
-    fontSize: 18,
-  },
-
-  analysisContent: {
-    flex: 1,
-  },
-
-  analysisTitle: {
-    color: COLORS.white,
-    fontSize: 18,
-    fontWeight: "800",
-    marginBottom: 6,
-  },
-
-  analysisText: {
-    color: "#BEB8B7",
-    fontSize: 13,
-    lineHeight: 18,
-  },
-
-  analysisHighlight: {
-    marginTop: 12,
-    backgroundColor: "#2B1D1A",
-    borderRadius: 10,
-    padding: 10,
-  },
-
-  analysisHighlightText: {
-    color: "#FFB2A5",
-    fontSize: 11,
-    fontWeight: "700",
-  },
-
-  seeAll: {
-    color: COLORS.orange,
-    fontSize: 11,
-    fontWeight: "800",
-  },
-
-  transactions: {
-    marginTop: -2,
-  },
-
-  transaction: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-
-  transactionIcon: {
-    width: 37,
-    height: 37,
-    borderRadius: 13,
-    backgroundColor: COLORS.cardLight,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 11,
-  },
-
-  transactionIconText: {
-    color: COLORS.orange,
-    fontSize: 17,
-    fontWeight: "800",
-  },
-
-  transactionInfo: {
-    flex: 1,
-  },
-
-  transactionTitle: {
-    color: COLORS.white,
-    fontSize: 13,
-    fontWeight: "700",
-  },
-
-  transactionCategory: {
-    color: COLORS.muted,
-    fontSize: 10,
-    marginTop: 3,
-  },
-
-  transactionAmount: {
-    color: "#FF8270",
-    fontSize: 12,
-    fontWeight: "800",
-  },
-
-  footer: {
-    color: "#555151",
-    textAlign: "center",
-    fontSize: 9,
-    marginTop: 6,
-  },
-
-  incomeCard: {
-    flexDirection: "row",
-    backgroundColor: "#101A16",
-    borderColor: "#13a0653a",
-    borderWidth: 1,
-    borderRadius: 20,
-    padding: 17,
-    marginBottom: 12,
-  },
-
-  incomeIcon: {
-    backgroundColor: "#123D2D",
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-
-  incomeIconText: {
-    color: "#13A066",
-    fontSize: 16,
-    fontWeight: "600",
-    lineHeight: 32,
-  },
-
-  incomeContent: {
-    flex: 1,
-  },
-
-  incomeTitle: {
-    color: "#FFFFFF",
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 5,
-  },
-
-  incomeText: {
-    color: "#A8A8A8",
-    fontSize: 13,
-    lineHeight: 18,
-    marginBottom: 12,
-  },
-
-  incomeHighlight: {
-    backgroundColor: "#142A21",
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-  },
-
-  incomeHighlightText: {
-    color: "#62C58C",
-    fontSize: 11,
-    fontWeight: "600",
-    lineHeight: 16,
-  },
-
-  financialChart: {
-    width: "100%",
-  },
-
-  financialRow: {
-    marginBottom: 17,
-  },
-
-  financialHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 7,
-  },
-
-  financialLabel: {
-    color: COLORS.text,
-    fontSize: 11,
-    fontWeight: "700",
-  },
-
-  financialValue: {
-    fontSize: 11,
-    fontWeight: "800",
-  },
-
-  barBackground: {
-    width: "100%",
-    height: 10,
-    backgroundColor: "#302D2D",
-    borderRadius: 10,
-    overflow: "hidden",
-  },
-
-  bar: {
-    height: "100%",
-    borderRadius: 10,
-  },
-
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
-    width: "80%",
-    maxHeight: "50%",
-    backgroundColor: colors.bg,
-    borderRadius: 12,
-    paddingVertical: 8,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-  },
-  modalItem: {
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-  },
-  modalItemSelected: {
-    backgroundColor: colors.bg,
-  },
-  modalItemText: {
-    fontSize: 18,
-    color: "#FFF",
-  },
-  modalItemTextSelected: {
-    fontWeight: "bold",
-    color: "#FF3B1F",
-  },
-});

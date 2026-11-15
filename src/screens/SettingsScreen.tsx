@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/src/components/Button';
@@ -8,7 +8,7 @@ import { BellIcon, HelpCircleIcon, LockIcon } from '@/src/components/icons';
 import { ScreenTransition } from '@/src/components/ScreenTransition';
 import { useAppContext } from '@/src/hooks/useAppContext';
 import type { StackNavigationRoutes } from '@/src/routes/App.routes';
-import { colors, fonts, radius, textMuted, withAlpha } from '@/src/theme/colors';
+import { colors } from '@/src/theme/colors';
 
 export function SettingsScreen() {
     const insets = useSafeAreaInsets();
@@ -19,46 +19,46 @@ export function SettingsScreen() {
     const userInitial = ( ( store.user?.displayName || store.user?.email || 'U' ).trim()[ 0 ] || 'U' ).toUpperCase();
 
     return (
-        <ScreenTransition style={ { backgroundColor: colors.bg } }>
-            <View style={ styles.screen }>
-                <View style={ [styles.header, { paddingTop: insets.top + 14 }] }>
-                    <Text style={ styles.title }>Configurações</Text>
+        <ScreenTransition className="bg-app">
+            <View className="flex-1 bg-app">
+                <View className="px-5 pb-3.5" style={ { paddingTop: insets.top + 14 } }>
+                    <Text className="font-heading text-[20px] text-ink">Configurações</Text>
                 </View>
 
-                <ScrollView contentContainerStyle={ styles.body } showsVerticalScrollIndicator={ false }>
-                    <View style={ styles.profile }>
-                        <View style={ styles.avatar }>
-                            <Text style={ styles.avatarText }>{ userInitial }</Text>
+                <ScrollView contentContainerClassName="px-5 pt-1.5 pb-5 gap-4" showsVerticalScrollIndicator={ false }>
+                    <View className="flex-row items-center gap-3.5 rounded-xl bg-surface p-4">
+                        <View className="w-[52px] h-[52px] rounded-[26px] bg-brand/25 items-center justify-center">
+                            <Text className="font-heading text-[18px] text-brand-300">{ userInitial }</Text>
                         </View>
-                        <View style={ styles.profileInfo }>
-                            <Text style={ styles.profileName } numberOfLines={ 1 }>
+                        <View className="flex-1 min-w-0">
+                            <Text className="font-body-medium text-[15px] text-ink" numberOfLines={ 1 }>
                                 { userName }
                             </Text>
-                            <Text style={ styles.profileEmail } numberOfLines={ 1 }>
+                            <Text className="text-[12.5px] text-ink/55 mt-0.5 font-body" numberOfLines={ 1 }>
                                 { userEmail }
                             </Text>
                         </View>
                     </View>
 
-                    <View style={ styles.list }>
-                        <View style={ [styles.listRow, styles.listRowDivider] }>
+                    <View className="rounded-xl bg-surface overflow-hidden">
+                        <View className="flex-row items-center gap-3 py-3.5 px-4 border-b border-b-divider">
                             <BellIcon size={ 17 } color={ colors.text }/>
-                            <Text style={ styles.listLabel }>Notificações</Text>
+                            <Text className="text-[14px] text-ink flex-1 font-body">Notificações</Text>
                         </View>
-                        <View style={ [styles.listRow, styles.listRowDivider] }>
+                        <View className="flex-row items-center gap-3 py-3.5 px-4 border-b border-b-divider">
                             <LockIcon size={ 17 } color={ colors.text }/>
-                            <Text style={ styles.listLabel }>Segurança e senha</Text>
+                            <Text className="text-[14px] text-ink flex-1 font-body">Segurança e senha</Text>
                         </View>
-                        <View style={ styles.listRow }>
+                        <View className="flex-row items-center gap-3 py-3.5 px-4">
                             <HelpCircleIcon size={ 17 } color={ colors.text }/>
-                            <Text style={ styles.listLabel }>Ajuda e suporte</Text>
+                            <Text className="text-[14px] text-ink flex-1 font-body">Ajuda e suporte</Text>
                         </View>
                     </View>
 
                     <Button
                         variant="secondary"
-                        style={ styles.logout }
-                        textColor={ colors.accent400 }
+                        className="justify-center !border-brand-800"
+                        textClassName="text-brand-400"
                         onPress={ async () => {
                             await store.logout();
                             navigation
@@ -73,35 +73,3 @@ export function SettingsScreen() {
         </ScreenTransition>
     );
 }
-
-const styles = StyleSheet.create({
-    screen: { flex: 1, backgroundColor: colors.bg },
-    header: { paddingHorizontal: 20, paddingBottom: 14 },
-    title: { fontFamily: fonts.heading, fontSize: 20, color: colors.text },
-    body: { paddingHorizontal: 20, paddingTop: 6, paddingBottom: 20, gap: 16 },
-    profile: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 14,
-        borderRadius: radius.xl,
-        backgroundColor: colors.surface,
-        padding: 16,
-    },
-    avatar: {
-        width: 52,
-        height: 52,
-        borderRadius: 26,
-        backgroundColor: withAlpha(colors.accent, 0.25),
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    avatarText: { fontFamily: fonts.heading, fontSize: 18, color: colors.accent300 },
-    profileInfo: { flex: 1, minWidth: 0 },
-    profileName: { fontFamily: fonts.bodyMedium, fontSize: 15, color: colors.text },
-    profileEmail: { fontSize: 12.5, color: textMuted(0.55), marginTop: 2, fontFamily: fonts.body },
-    list: { borderRadius: radius.xl, backgroundColor: colors.surface, overflow: 'hidden' },
-    listRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14, paddingHorizontal: 16 },
-    listRowDivider: { borderBottomWidth: 1, borderBottomColor: colors.divider },
-    listLabel: { fontSize: 14, color: colors.text, flex: 1, fontFamily: fonts.body },
-    logout: { justifyContent: 'center', borderColor: colors.accent800 },
-});

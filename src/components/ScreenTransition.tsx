@@ -1,6 +1,15 @@
 import { useCallback, useRef, type ReactNode } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { Animated, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+import { Animated, View } from 'react-native';
+
+import { cn } from '@/src/utils/cn';
+
+/**
+ * `View` aqui já é a versão com suporte a `className` (NativeWind reescreve o
+ * import de `react-native`). Envolvê-la com `createAnimatedComponent` permite
+ * combinar classes Tailwind estáticas com os valores `Animated` no `style`.
+ */
+const AnimatedView = Animated.createAnimatedComponent(View);
 
 /**
  * Fades and slides a screen's content in every time it gains focus, using
@@ -11,10 +20,10 @@ import { Animated, StyleSheet, type StyleProp, type ViewStyle } from 'react-nati
  */
 export function ScreenTransition({
     children,
-    style,
+    className,
 }: {
     children: ReactNode;
-    style?: StyleProp<ViewStyle>;
+    className?: string;
 }) {
     const opacity = useRef(new Animated.Value(0)).current;
     const translateY = useRef(new Animated.Value(20)).current;
@@ -40,14 +49,11 @@ export function ScreenTransition({
     );
 
     return (
-        <Animated.View
-            style={[styles.flex, style, { opacity, transform: [{ translateY }] }]}
+        <AnimatedView
+            className={cn('flex-1', className)}
+            style={{ opacity, transform: [{ translateY }] }}
         >
             {children}
-        </Animated.View>
+        </AnimatedView>
     );
 }
-
-const styles = StyleSheet.create({
-    flex: { flex: 1 },
-});

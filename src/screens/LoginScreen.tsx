@@ -7,7 +7,7 @@ import {
     signInWithEmailAndPassword,
 } from 'firebase/auth';
 import { useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/src/components/Button';
@@ -16,7 +16,6 @@ import { Input } from '@/src/components/Input';
 import { ScreenTransition } from '@/src/components/ScreenTransition';
 import { StackNavigationRoutes } from '@/src/routes/App.routes';
 import { auth } from '@/src/services/firebase';
-import { colors, fonts, textMuted } from '@/src/theme/colors';
 
 
 export function LoginScreen() {
@@ -112,16 +111,19 @@ export function LoginScreen() {
 
 
     return (
-        <ScreenTransition style={{ backgroundColor: colors.bg }}>
+        <ScreenTransition className="bg-app">
             <KeyboardAvoidingView
-                style={styles.flex}
+                className="flex-1"
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             >
-                <View style={[styles.container, { paddingTop: insets.top + 40 }]}>
-                    <Text style={styles.brand}>Red Bank</Text>
-                    <Text style={styles.subtitle}>Entre com sua conta</Text>
+                <View
+                    className="flex-1 px-[26px] pb-[30px] bg-app"
+                    style={{ paddingTop: insets.top + 40 }}
+                >
+                    <Text className="font-heading text-[26px] text-ink mb-1.5">Red Bank</Text>
+                    <Text className="text-[13px] text-ink/60 mb-8 font-body">Entre com sua conta</Text>
 
-                    <View style={styles.fields}>
+                    <View className="gap-3.5">
                         <FormField label="E-mail">
                             <Input
                                 placeholder="voce@email.com"
@@ -143,14 +145,14 @@ export function LoginScreen() {
                             />
                         </FormField>
 
-                        <Button variant="ghost" style={styles.forgot} onPress={() => { }}>
+                        <Button variant="ghost" className="!self-end" onPress={() => { }}>
                             Esqueci minha senha
                         </Button>
 
                         <Button
                             variant="primary"
                             block
-                            style={styles.submit}
+                            className="mt-1.5"
                             onPress={handleLogin}
                             loading={loading}
                         >
@@ -167,16 +169,16 @@ export function LoginScreen() {
                         </Button>
 
                         {error ? (
-                            <View style={styles.generalError}>
-                                <Text style={styles.generalErrorText}>{error}</Text>
+                            <View className="bg-brand/14 rounded-[10px] py-[9px] px-3">
+                                <Text className="text-brand-300 text-[12.5px] font-body">{error}</Text>
                             </View>
                         ) : null}
                     </View>
 
-                    <View style={styles.flex} />
-                    <Text style={styles.protected}>Protegido pelo Firebase Authentication</Text>
-                    <View style={styles.footer}>
-                        <Text style={styles.footerText}>Não tem conta?</Text>
+                    <View className="flex-1" />
+                    <Text className="text-[12.5px] text-ink/60 text-center mb-2.5 font-body">Protegido pelo Firebase Authentication</Text>
+                    <View className="flex-row justify-center items-center gap-0.5">
+                        <Text className="text-[13px] text-ink font-body">Não tem conta?</Text>
                         <Button variant="ghost" onPress={goSignup}>Cadastre-se</Button>
                     </View>
                 </View>
@@ -184,44 +186,3 @@ export function LoginScreen() {
         </ScreenTransition>
     );
 }
-
-const styles = StyleSheet.create({
-    flex: { flex: 1 },
-    container: {
-        flex: 1,
-        paddingHorizontal: 26,
-        paddingBottom: 30,
-        backgroundColor: colors.bg,
-    },
-    brand: {
-        fontFamily: fonts.heading,
-        fontSize: 26,
-        color: colors.text,
-        marginBottom: 6,
-    },
-    subtitle: {
-        fontSize: 13,
-        color: textMuted(0.6),
-        marginBottom: 32,
-        fontFamily: fonts.body,
-    },
-    fields: { gap: 14 },
-    forgot: { alignSelf: 'flex-end' },
-    generalError: {
-        backgroundColor: 'rgba(236, 48, 19, 0.14)',
-        borderRadius: 10,
-        paddingVertical: 9,
-        paddingHorizontal: 12,
-    },
-    generalErrorText: { color: colors.accent300, fontSize: 12.5, fontFamily: fonts.body },
-    submit: { marginTop: 6 },
-    protected: {
-        fontSize: 12.5,
-        color: textMuted(0.6),
-        textAlign: 'center',
-        marginBottom: 10,
-        fontFamily: fonts.body,
-    },
-    footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 2 },
-    footerText: { fontSize: 13, color: colors.text, fontFamily: fonts.body },
-});

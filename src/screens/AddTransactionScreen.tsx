@@ -10,7 +10,6 @@ import {
     Platform,
     Pressable,
     ScrollView,
-    StyleSheet,
     Text,
     View,
 } from "react-native";
@@ -24,7 +23,7 @@ import type {
     TransactionType,
 } from "@/src/interfaces";
 import type { StackNavigationRoutes } from "@/src/routes/App.routes";
-import { colors, fonts, textMuted } from "@/src/theme/colors";
+import { cn } from "@/src/utils/cn";
 
 import { CATEGORIES } from "@/src/data/categories";
 
@@ -235,17 +234,17 @@ export function AddTransactionScreen() {
     };
 
     return (
-        <ScreenTransition style={ { backgroundColor: colors.bg } }>
+        <ScreenTransition className="bg-app">
             <KeyboardAvoidingView
-                style={ styles.flex }
+                className="flex-1"
                 behavior={ Platform.OS === "ios" ? "padding" : undefined }
             >
             <ScrollView
-                style={ styles.flex }
-                contentContainerStyle={ styles.container }
+                className="flex-1"
+                contentContainerClassName="grow bg-app px-[26px] pt-[45px] pb-10"
                 keyboardShouldPersistTaps="handled"
             >
-                <View style={ styles.header }>
+                <View className="flex-row items-center mb-[30px]">
                     <Button
                         variant="ghost"
                         onPress={ () => navigation.goBack() }
@@ -253,16 +252,16 @@ export function AddTransactionScreen() {
                         ←
                     </Button>
 
-                    <Text style={ styles.title }>
+                    <Text className="flex-1 font-heading text-[28px] text-ink text-center">
                         { isEditing ? "Editar transação" : "Nova transação" }
                     </Text>
 
-                    <View style={ styles.headerSpacer }/>
+                    <View className="w-10"/>
                 </View>
 
-                <View style={ styles.fields }>
+                <View className="gap-5">
                     <View>
-                        <Text style={ styles.label }>Descrição</Text>
+                        <Text className="font-body text-[15px] text-ink mb-2">Descrição</Text>
 
                         <Input
                             placeholder="Ex: Supermercado"
@@ -273,20 +272,20 @@ export function AddTransactionScreen() {
                         />
 
                         { errors.desc && (
-                            <Text style={ styles.error }>
+                            <Text className="mt-[5px] font-body text-[12px] text-brand-300">
                                 { errors.desc }
                             </Text>
                         ) }
                     </View>
 
                     <View>
-                        <Text style={ styles.label }>Valor</Text>
+                        <Text className="font-body text-[15px] text-ink mb-2">Valor</Text>
 
-                        <View style={ styles.amountContainer }>
-                            <Text style={ styles.currency }>R$</Text>
+                        <View className="flex-row items-center gap-2.5">
+                            <Text className="font-heading text-[18px] text-ink">R$</Text>
 
                             <Input
-                                style={ styles.amountInput }
+                                className="flex-1"
                                 placeholder="0,00"
                                 keyboardType="decimal-pad"
                                 value={ form.amount }
@@ -297,20 +296,20 @@ export function AddTransactionScreen() {
                         </View>
 
                         { errors.amount && (
-                            <Text style={ styles.error }>
+                            <Text className="mt-[5px] font-body text-[12px] text-brand-300">
                                 { errors.amount }
                             </Text>
                         ) }
                     </View>
 
-                    <View style={ styles.typeContainer }>
+                    <View className="flex-row gap-2.5">
                         <Button
                             variant={
                                 form.type === "expense"
                                     ? "primary"
                                     : "secondary"
                             }
-                            style={ styles.typeButton }
+                            className="flex-1"
                             onPress={ () => selectType("expense") }
                         >
                             Despesa
@@ -322,7 +321,7 @@ export function AddTransactionScreen() {
                                     ? "primary"
                                     : "secondary"
                             }
-                            style={ styles.typeButton }
+                            className="flex-1"
                             onPress={ () => selectType("income") }
                         >
                             Receita
@@ -330,36 +329,35 @@ export function AddTransactionScreen() {
                     </View>
 
                     <View>
-                        <Text style={ styles.label }>Categoria</Text>
+                        <Text className="font-body text-[15px] text-ink mb-2">Categoria</Text>
 
                         <Pressable
-                            style={ styles.select }
+                            className="h-[52px] border border-ink/25 rounded-[8px] px-4 flex-row items-center justify-between"
                             onPress={ () =>
                                 setCategoryModalVisible(true)
                             }
                         >
                             <Text
-                                style={ [
-                                    styles.selectText,
-                                    !form.category &&
-                                    styles.placeholder,
-                                ] }
+                                className={ cn(
+                                    "font-body text-[16px]",
+                                    form.category ? "text-ink" : "text-ink/60",
+                                ) }
                             >
                                 { form.category || "Selecione..." }
                             </Text>
 
-                            <Text style={ styles.arrow }>⌄</Text>
+                            <Text className="text-[22px] text-ink">⌄</Text>
                         </Pressable>
 
                         { errors.category && (
-                            <Text style={ styles.error }>
+                            <Text className="mt-[5px] font-body text-[12px] text-brand-300">
                                 { errors.category }
                             </Text>
                         ) }
                     </View>
 
                     <View>
-                        <Text style={ styles.label }>Data</Text>
+                        <Text className="font-body text-[15px] text-ink mb-2">Data</Text>
 
                         <Pressable onPress={ () => setShowDatePicker(true) }>
                             <View pointerEvents="none">
@@ -384,20 +382,23 @@ export function AddTransactionScreen() {
                         ) }
 
                         { errors.date && (
-                            <Text style={ styles.error }>
+                            <Text className="mt-[5px] font-body text-[12px] text-brand-300">
                                 { errors.date }
                             </Text>
                         ) }
                     </View>
                     <View>
-                        <Text style={styles.label}>
+                        <Text className="font-body text-[15px] text-ink mb-2">
                             Recibo (opcional)
                         </Text>
 
                         {!form.receipt ? (
-                            <Pressable style={styles.receipt} onPress={handlePickImage}>
-                                <Text style={styles.receiptIcon}>＋</Text>
-                                <Text style={styles.receiptText}>
+                            <Pressable
+                                className="min-h-[100px] border border-dashed border-ink/35 rounded-[14px] items-center justify-center gap-2"
+                                onPress={handlePickImage}
+                            >
+                                <Text className="text-[28px] text-ink/70">＋</Text>
+                                <Text className="font-body text-[14px] text-ink/70">
                                     Adicionar comprovante
                                 </Text>
                             </Pressable>
@@ -405,12 +406,7 @@ export function AddTransactionScreen() {
                             <Pressable onPress={handlePickImage}>
                                 <Image
                                     source={{ uri: form.receipt }}
-                                    style={{
-                                        width: 360,
-                                        borderRadius: 8,
-                                        aspectRatio: 1,
-                                        marginTop: 30,
-                                    }}
+                                    className="w-[360px] rounded-[8px] aspect-square mt-[30px]"
                                     resizeMode="contain"
                                 />
                             </Pressable>
@@ -421,7 +417,7 @@ export function AddTransactionScreen() {
                 <Button
                     variant="primary"
                     block
-                    style={ styles.saveButton }
+                    className="mt-[30px]"
                     onPress={ handleSave }
                 >
 
@@ -439,28 +435,28 @@ export function AddTransactionScreen() {
                 }
             >
                 <Pressable
-                    style={ styles.modalOverlay }
+                    className="flex-1 justify-end bg-[rgba(0,0,0,0.6)]"
                     onPress={ () =>
                         setCategoryModalVisible(false)
                     }
                 >
                     <Pressable
-                        style={ styles.modal }
+                        className="bg-app px-6 pt-6 pb-[35px] rounded-t-[24px]"
                         onPress={ ( event ) => event.stopPropagation() }
                     >
-                        <Text style={ styles.modalTitle }>
+                        <Text className="font-heading text-[20px] text-ink mb-[18px]">
                             Escolha uma categoria
                         </Text>
 
                         { categories.map(( category ) => (
                             <Pressable
                                 key={ category }
-                                style={ styles.categoryOption }
+                                className="py-3.5 border-b border-b-ink/12"
                                 onPress={ () =>
                                     selectCategory(category)
                                 }
                             >
-                                <Text style={ styles.categoryText }>
+                                <Text className="font-body text-[16px] text-ink">
                                     { category }
                                 </Text>
                             </Pressable>
@@ -472,164 +468,3 @@ export function AddTransactionScreen() {
         </ScreenTransition>
     );
 }
-
-const styles = StyleSheet.create({
-    flex: {
-        flex: 1,
-    },
-
-    container: {
-        flexGrow: 1,
-        backgroundColor: colors.bg,
-        paddingHorizontal: 26,
-        paddingTop: 45,
-        paddingBottom: 40,
-    },
-
-    header: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: 30,
-    },
-
-    title: {
-        flex: 1,
-        fontFamily: fonts.heading,
-        fontSize: 28,
-        color: colors.text,
-        textAlign: "center",
-    },
-
-    headerSpacer: {
-        width: 40,
-    },
-
-    fields: {
-        gap: 20,
-    },
-
-    label: {
-        fontFamily: fonts.body,
-        fontSize: 15,
-        color: colors.text,
-        marginBottom: 8,
-    },
-
-    amountContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 10,
-    },
-
-    currency: {
-        fontFamily: fonts.heading,
-        fontSize: 18,
-        color: colors.text,
-    },
-
-    amountInput: {
-        flex: 1,
-    },
-
-    typeContainer: {
-        flexDirection: "row",
-        gap: 10,
-    },
-
-    typeButton: {
-        flex: 1,
-    },
-
-    select: {
-        height: 52,
-        borderWidth: 1,
-        borderColor: textMuted(0.25),
-        borderRadius: 8,
-        paddingHorizontal: 16,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-    },
-
-    selectText: {
-        fontFamily: fonts.body,
-        fontSize: 16,
-        color: colors.text,
-    },
-
-    placeholder: {
-        color: textMuted(0.6),
-    },
-
-    arrow: {
-        fontSize: 22,
-        color: colors.text,
-    },
-
-    receipt: {
-        minHeight: 100,
-        borderWidth: 1,
-        borderStyle: "dashed",
-        borderColor: textMuted(0.35),
-        borderRadius: 14,
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 8,
-    },
-
-    receiptIcon: {
-        fontSize: 28,
-        color: textMuted(0.7),
-    },
-
-    receiptText: {
-        fontFamily: fonts.body,
-        fontSize: 14,
-        color: textMuted(0.7),
-    },
-
-    error: {
-        marginTop: 5,
-        fontFamily: fonts.body,
-        fontSize: 12,
-        color: colors.accent300,
-    },
-
-    saveButton: {
-        marginTop: 30,
-    },
-
-    modalOverlay: {
-        flex: 1,
-        justifyContent: "flex-end",
-        backgroundColor: "rgba(0, 0, 0, 0.6)",
-    },
-
-    modal: {
-        backgroundColor: colors.bg,
-        paddingHorizontal: 24,
-        paddingTop: 24,
-        paddingBottom: 35,
-        borderTopLeftRadius: 24,
-        borderTopRightRadius: 24,
-    },
-
-    modalTitle: {
-        fontFamily: fonts.heading,
-        fontSize: 20,
-        color: colors.text,
-        marginBottom: 18,
-    },
-
-    categoryOption: {
-        paddingVertical: 14,
-        borderBottomWidth: 1,
-        borderBottomColor: textMuted(0.12),
-    },
-
-    categoryText: {
-        fontFamily: fonts.body,
-        fontSize: 16,
-        color: colors.text,
-    },
-});

@@ -1,6 +1,5 @@
 import {
     Pressable,
-    StyleSheet,
     Text,
     View,
 } from "react-native";
@@ -16,6 +15,7 @@ import type { StackNavigationRoutes } from "@/src/routes/App.routes";
 import { Alert } from "react-native";
 import { ScreenTransition } from "@/src/components/ScreenTransition";
 import { useAppContext } from "@/src/hooks/useAppContext";
+import { cn } from "@/src/utils/cn";
 
 type Navigation = NativeStackNavigationProp<
     StackNavigationRoutes,
@@ -92,77 +92,81 @@ export function TransactionDetailsScreen() {
     }
 
     return (
-        <ScreenTransition style={ { backgroundColor: "#111111" } }>
-            <View style={ styles.container }>
-                <View style={ styles.header }>
+        <ScreenTransition className="bg-[#111111]">
+            <View className="flex-1 bg-[#111111]">
+                <View className="h-[82px] flex-row items-center px-7 pt-3">
                 <Pressable
                     onPress={ () => navigation.goBack() }
-                    style={ styles.backButton }
+                    className="w-9 h-9 items-center justify-center mr-3.5"
                 >
-                    <Text style={ styles.backIcon }>‹</Text>
+                    <Text className="text-[32px] leading-[34px] font-light text-[#F5F5F5]">‹</Text>
                 </Pressable>
 
-                <Text style={ styles.title }>
+                <Text className="text-[28px] font-extrabold text-[#F5F5F5]">
                     Detalhes
                 </Text>
             </View>
 
-            <View style={ styles.divider }/>
+            <View className="h-0.5 bg-[#333333]"/>
 
-            <View style={ styles.content }>
-                <View style={ styles.transactionCard }>
-                    <View style={ styles.categoryBadge }>
-                        <Text style={ styles.categoryText }>
+            <View className="px-7 pt-8">
+                <View className="bg-[#1C1A19] rounded-[28px] p-6 h-[185px]">
+                    <View className="self-start border-[1.5px] border-[#FF321E] rounded-[20px] px-4 py-1.5">
+                        <Text className="text-[15px] font-medium text-[#FF321E]">
                             { transaction.category }
                         </Text>
                     </View>
 
                     <Text
-                        style={ [
-                            styles.amount,
-                            isIncome
-                                ? styles.income
-                                : styles.expense,
-                        ] }
+                        className={ cn(
+                            "mt-[26px] text-[32px] font-extrabold",
+                            isIncome ? "text-[#65D39A]" : "text-[#F5F5F5]",
+                        ) }
                     >
                         { isIncome ? "+" : "-" }{ " " }
                         { formatCurrency(transaction.amount) }
                     </Text>
 
-                    <Text style={ styles.description }>
+                    <Text className="mt-3.5 text-[17px] font-medium text-[#96918F]">
                         { transaction.desc }
                     </Text>
                 </View>
 
-                <View style={ styles.infoRow }>
-                    <Text style={ styles.infoLabel }>
+                <View className="flex-row items-center justify-between mt-7">
+                    <Text className="text-[18px] font-medium text-[#8F8B89]">
                         Data
                     </Text>
 
-                    <Text style={ styles.infoValue }>
+                    <Text className="text-[17px] font-bold text-[#F5F5F5]">
                         { formattedDate }
                     </Text>
                 </View>
 
-                <View style={ styles.infoRow }>
-                    <Text style={ styles.infoLabel }>
+                <View className="flex-row items-center justify-between mt-7">
+                    <Text className="text-[18px] font-medium text-[#8F8B89]">
                         Tipo
                     </Text>
 
-                    <Text style={ styles.infoValue }>
+                    <Text className="text-[17px] font-bold text-[#F5F5F5]">
                         { isIncome ? "Receita" : "Despesa" }
                     </Text>
                 </View>
 
-                <View style={ styles.actions }>
-                    <Pressable style={ styles.editButton } onPress={ handleEdit }>
-                        <Text style={ styles.editText }>
+                <View className="flex-row gap-3.5 mt-[38px]">
+                    <Pressable
+                        className="flex-1 h-[54px] border-[1.5px] border-[#383635] rounded-[18px] items-center justify-center"
+                        onPress={ handleEdit }
+                    >
+                        <Text className="text-[20px] font-extrabold text-[#F5F5F5]">
                             Editar
                         </Text>
                     </Pressable>
 
-                    <Pressable style={ styles.deleteButton } onPress={ handleDelete }>
-                        <Text style={ styles.deleteText }>
+                    <Pressable
+                        className="flex-1 h-[54px] border-[1.5px] border-[#FF321E] rounded-[18px] items-center justify-center"
+                        onPress={ handleDelete }
+                    >
+                        <Text className="text-[20px] font-extrabold text-[#FF8D80]">
                             Excluir
                         </Text>
                     </Pressable>
@@ -172,150 +176,3 @@ export function TransactionDetailsScreen() {
         </ScreenTransition>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#111111",
-    },
-
-    header: {
-        height: 82,
-        flexDirection: "row",
-        alignItems: "center",
-        paddingHorizontal: 28,
-        paddingTop: 12,
-    },
-
-    backButton: {
-        width: 36,
-        height: 36,
-        alignItems: "center",
-        justifyContent: "center",
-        marginRight: 14,
-    },
-
-    backIcon: {
-        fontSize: 32,
-        lineHeight: 34,
-        fontWeight: "300",
-        color: "#F5F5F5",
-    },
-
-    title: {
-        fontSize: 28,
-        fontWeight: "800",
-        color: "#F5F5F5",
-    },
-
-    divider: {
-        height: 2,
-        backgroundColor: "#333333",
-    },
-
-    content: {
-        paddingHorizontal: 28,
-        paddingTop: 32,
-    },
-
-    transactionCard: {
-        backgroundColor: "#1C1A19",
-        borderRadius: 28,
-        padding: 24,
-        height: 185,
-    },
-
-    categoryBadge: {
-        alignSelf: "flex-start",
-        borderWidth: 1.5,
-        borderColor: "#FF321E",
-        borderRadius: 20,
-        paddingHorizontal: 16,
-        paddingVertical: 6,
-    },
-
-    categoryText: {
-        fontSize: 15,
-        fontWeight: "500",
-        color: "#FF321E",
-    },
-
-    amount: {
-        marginTop: 26,
-        fontSize: 32,
-        fontWeight: "800",
-        color: "#F5F5F5",
-    },
-
-    income: {
-        color: "#65D39A",
-    },
-
-    expense: {
-        color: "#F5F5F5",
-    },
-
-    description: {
-        marginTop: 14,
-        fontSize: 17,
-        fontWeight: "500",
-        color: "#96918F",
-    },
-
-    infoRow: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        marginTop: 28,
-    },
-
-    infoLabel: {
-        fontSize: 18,
-        fontWeight: "500",
-        color: "#8F8B89",
-    },
-
-    infoValue: {
-        fontSize: 17,
-        fontWeight: "700",
-        color: "#F5F5F5",
-    },
-
-    actions: {
-        flexDirection: "row",
-        gap: 14,
-        marginTop: 38,
-    },
-
-    editButton: {
-        flex: 1,
-        height: 54,
-        borderWidth: 1.5,
-        borderColor: "#383635",
-        borderRadius: 18,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-
-    editText: {
-        fontSize: 20,
-        fontWeight: "800",
-        color: "#F5F5F5",
-    },
-
-    deleteButton: {
-        flex: 1,
-        height: 54,
-        borderWidth: 1.5,
-        borderColor: "#FF321E",
-        borderRadius: 18,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-
-    deleteText: {
-        fontSize: 20,
-        fontWeight: "800",
-        color: "#FF8D80",
-    },
-});

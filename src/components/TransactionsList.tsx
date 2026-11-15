@@ -2,13 +2,12 @@ import {
     ActivityIndicator,
     FlatList,
     Pressable,
-    StyleSheet,
     Text,
     View,
 } from "react-native";
 
 import type { Transaction } from "@/src/interfaces";
-import { colors, textMuted } from "@/src/theme/colors";
+import { cn } from "@/src/utils/cn";
 
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -32,8 +31,8 @@ export function TransactionList({
         useNavigation<NativeStackNavigationProp<StackNavigationRoutes>>();
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>
+        <View className="flex-1 mt-8">
+            <Text className="text-[22px] font-bold text-ink mb-[18px]">
                 Transações recentes
             </Text>
 
@@ -44,41 +43,41 @@ export function TransactionList({
                 onEndReached={onLoadMore}
                 onEndReachedThreshold={0.5}
                 ListEmptyComponent={
-                    <Text style={styles.emptyText}>
+                    <Text className="text-[14px] text-ink/65">
                         Nenhuma transação encontrada.
                     </Text>
                 }
                 ListFooterComponent={
                     loadingMore ? (
-                        <ActivityIndicator style={styles.loading} />
+                        <ActivityIndicator className="my-5" />
                     ) : null
                 }
                 renderItem={({ item: transaction }) => (
                     <Pressable
-                        style={styles.transactionItem}
+                        className="flex-row items-center justify-between py-[18px] border-b border-b-ink/12"
                         onPress={() =>
                             navigation.navigate("TransactionDetails", {
                                 transaction,
                             })
                         }
                     >
-                        <View style={styles.transactionInfo}>
-                            <Text style={styles.transactionDesc}>
+                        <View className="flex-1 mr-4">
+                            <Text className="text-[16px] font-semibold text-ink">
                                 {transaction.desc}
                             </Text>
 
-                            <Text style={styles.transactionCategory}>
+                            <Text className="mt-[5px] text-[13px] text-ink/65">
                                 {transaction.category} · {formatDateDisplay(transaction.date)}
                             </Text>
                         </View>
 
                         <Text
-                            style={[
-                                styles.transactionAmount,
+                            className={cn(
+                                "text-[16px] font-bold",
                                 transaction.type === "income"
-                                    ? styles.income
-                                    : styles.expense,
-                            ]}
+                                    ? "text-[#7FCF9A]"
+                                    : "text-brand-300",
+                            )}
                         >
                             {transaction.type === "income" ? "+" : "-"}
                             {formatCurrency(transaction.amount)}
@@ -89,65 +88,3 @@ export function TransactionList({
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        marginTop: 32,
-    },
-
-    title: {
-        fontSize: 22,
-        fontWeight: "700",
-        color: colors.text,
-        marginBottom: 18,
-    },
-
-    transactionItem: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        paddingVertical: 18,
-        borderBottomWidth: 1,
-        borderBottomColor: textMuted(0.12),
-    },
-
-    transactionInfo: {
-        flex: 1,
-        marginRight: 16,
-    },
-
-    transactionDesc: {
-        fontSize: 16,
-        fontWeight: "600",
-        color: colors.text,
-    },
-
-    transactionCategory: {
-        marginTop: 5,
-        fontSize: 13,
-        color: textMuted(0.65),
-    },
-
-    transactionAmount: {
-        fontSize: 16,
-        fontWeight: "700",
-    },
-
-    income: {
-        color: "#7FCF9A",
-    },
-
-    expense: {
-        color: colors.accent300,
-    },
-
-    emptyText: {
-        fontSize: 14,
-        color: textMuted(0.65),
-    },
-
-    loading: {
-        marginVertical: 20,
-    },
-});
