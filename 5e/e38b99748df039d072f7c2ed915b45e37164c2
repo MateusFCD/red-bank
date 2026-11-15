@@ -1,0 +1,131 @@
+src/components/dashboard/DonutChart.tsx
+  s_71f267dbd8abc1::t_6ff34531ee7d05 1-66
+src/hooks/useLogin.ts
+  s_71f267dbd8abc1::t_f77a56130aca9e 1-49
+src/domain/transactionForm.ts
+  s_71f267dbd8abc1::t_715818eba5f289 1-60
+.node-version
+  s_b137a7bfc07baa::t_d7a19a37032de5 1
+src/screens/DashboardScreen.tsx
+  s_71f267dbd8abc1::t_6ff34531ee7d05 1-43,46-52,54,56
+src/components/transaction/TransactionTypeToggle.tsx
+  s_71f267dbd8abc1::t_c5175f5c5b67fc 1-31
+src/components/home/FilterButton.tsx
+  s_71f267dbd8abc1::t_0d48665eb055af 1-25
+src/components/BottomNav.tsx
+  s_71f267dbd8abc1::t_0d367080daaa7a 1,6-7,11-23,25,30,32-53
+src/utils/format.ts
+  s_71f267dbd8abc1::t_f7e1a3f0f36da2 1-2,6,17-20,32-33,35,39-57
+src/context/TransactionFiltersContext.tsx
+  s_71f267dbd8abc1::t_eb16d50238560d 23-25
+  s_71f267dbd8abc1::t_821c6c5489e018 1-22,26-59
+src/components/transaction/DetailRow.tsx
+  s_71f267dbd8abc1::t_7570fbc515e869 1-10
+src/components/settings/SettingsMenu.tsx
+  s_71f267dbd8abc1::t_7570fbc515e869 1-30
+src/hooks/useAuth.ts
+  s_71f267dbd8abc1::t_a6fdc472d6c080 1-4
+src/services/transactions.ts
+  s_71f267dbd8abc1::t_5fe9c2d3248c3c 19,21-29,36-44,49,52-54,56,63-66,68,74-76,78-79,81-83
+src/hooks/useTransactionFilters.ts
+  s_71f267dbd8abc1::t_a6fdc472d6c080 1-7
+plugins/withPodsDeploymentTarget.js
+  s_b137a7bfc07baa::t_01f02d33b145c7 1-30
+src/components/FilterSheet.tsx
+  s_71f267dbd8abc1::t_0d48665eb055af 7,10-11,15-38,40-44,46-58,68,79-81,85-92,97-102,105-110,117-118,127-128,135,138
+src/services/imagePicker.ts
+  s_71f267dbd8abc1::t_5fe9c2d3248c3c 1-27
+src/screens/HomeScreen.tsx
+  s_71f267dbd8abc1::t_2fe1dc1d2286fd 25-26,32,34-38,48-51,78,80-82
+  s_71f267dbd8abc1::t_0d48665eb055af 1-4,6-19,21-22,24,27-29,31,42-47,59,63,67,74,77,79,83-84,87-91
+src/context/TransactionsContext.tsx
+  s_71f267dbd8abc1::t_2fe1dc1d2286fd 1-40,67-84
+  s_71f267dbd8abc1::t_eb16d50238560d 41-48
+  s_71f267dbd8abc1::t_1dfd80d23425f5 49-66,85-133
+src/domain/dashboard.ts
+  s_71f267dbd8abc1::t_715818eba5f289 1-87
+src/components/transaction/TransactionSummaryCard.tsx
+  s_71f267dbd8abc1::t_7570fbc515e869 1-30
+src/domain/transactions.ts
+  s_71f267dbd8abc1::t_715818eba5f289 1-35
+src/domain/filters.ts
+  s_71f267dbd8abc1::t_715818eba5f289 1-52
+src/screens/TransactionDetailsScreen.tsx
+  s_71f267dbd8abc1::t_7570fbc515e869 1-20,24-25,27-28,31-40,47-49,51-52,54,57,59-60,62-63,65-71,73-79
+src/screens/SettingsScreen.tsx
+  s_71f267dbd8abc1::t_0d367080daaa7a 9-11,13-19,24-31,36,40-41,43,49
+src/components/dashboard/DashboardSection.tsx
+  s_71f267dbd8abc1::t_6ff34531ee7d05 1-21
+src/components/BalanceCard.tsx
+  s_71f267dbd8abc1::t_7570fbc515e869 1-3,5-6,10-23,26,29,38,41-42
+src/hooks/useTransactionForm.ts
+  s_71f267dbd8abc1::t_f6c836ef9b4bd6 1,17,21-28,54
+  s_71f267dbd8abc1::t_a6fdc472d6c080 2-16,18-20,29-53,55-69
+src/hooks/useTransactionSummary.ts
+  s_71f267dbd8abc1::t_a6fdc472d6c080 1-8
+src/hooks/useFilteredTransactions.ts
+  s_71f267dbd8abc1::t_a6fdc472d6c080 1-21
+src/components/dashboard/FinancialChart.tsx
+  s_71f267dbd8abc1::t_6ff34531ee7d05 1-35
+src/components/dashboard/InsightCard.tsx
+  s_71f267dbd8abc1::t_6ff34531ee7d05 1-57
+src/utils/user.ts
+  s_71f267dbd8abc1::t_0d367080daaa7a 1-17
+src/components/settings/ProfileCard.tsx
+  s_71f267dbd8abc1::t_7570fbc515e869 1-25
+src/components/dashboard/CategoryLegend.tsx
+  s_71f267dbd8abc1::t_6ff34531ee7d05 1-31
+src/components/transaction/ReceiptPicker.tsx
+  s_71f267dbd8abc1::t_c5175f5c5b67fc 1-44
+src/services/auth.ts
+  s_71f267dbd8abc1::t_5fe9c2d3248c3c 1-63
+src/screens/LoginScreen.tsx
+  s_71f267dbd8abc1::t_f77a56130aca9e 10-11,17-18,20-21,66,75
+src/screens/AddTransactionScreen.tsx
+  s_71f267dbd8abc1::t_c5175f5c5b67fc 1-22,25-26,28-30,33-41,44-45,49-58,60-62,64,67-68,70-72,74,76-78,80-84,87,89,91-97,99-105,107-108,110-113
+src/hooks/useTransactions.ts
+  s_71f267dbd8abc1::t_a6fdc472d6c080 1-4
+src/components/DateField.tsx
+  s_71f267dbd8abc1::t_c5175f5c5b67fc 7,30,47
+src/components/dashboard/MonthPicker.tsx
+  s_71f267dbd8abc1::t_6ff34531ee7d05 1-61
+app.json
+  s_b137a7bfc07baa::t_16cff049540acf 34-35
+src/hooks/createContextHook.ts
+  s_71f267dbd8abc1::t_a6fdc472d6c080 1-14
+src/hooks/useMonthlyReport.ts
+  s_71f267dbd8abc1::t_a6fdc472d6c080 1-30
+src/components/TransactionsList.tsx
+  s_71f267dbd8abc1::t_0d48665eb055af 12,14-15,27,31-34,36-41,43-56,96
+  s_71f267dbd8abc1::t_e4e227dbcf5668 1,79-81,83
+  s_71f267dbd8abc1::t_2fe1dc1d2286fd 6,9-10,13,19-21,23-25,30,35,42,57-64,67-68,71,73-75,77,82,84-85,87-92,100-101,103-118,120-125,127
+  s_71f267dbd8abc1::t_0b787cb53693cb 28-29
+src/context/AppContext.tsx
+  s_71f267dbd8abc1::t_4767fef2901780 1-14
+src/context/AuthContext.tsx
+  s_71f267dbd8abc1::t_0c0cea7efc32b9 1-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.3",
+  "base_commit_sha": "5ee38b99748df039d072f7c2ed915b45e37164c2",
+  "prompts": {},
+  "sessions": {
+    "s_71f267dbd8abc1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "73e40255-0f64-4248-9ee8-9722e01b4450",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Mateus Drumond <mateusdrumond.dev@gmail.com>"
+    },
+    "s_b137a7bfc07baa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e4bfd7e3-08bc-4fd7-9d15-9a6e6faf6ff4",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Mateus Drumond <mateusdrumond.dev@gmail.com>"
+    }
+  }
+}
