@@ -1,35 +1,56 @@
+import type { ComponentType } from 'react';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { HomeIcon, SettingsIcon, DashboardIcon } from '@/src/components/icons';
+import { DashboardIcon, HomeIcon, SettingsIcon, type IconProps } from '@/src/components/icons';
+import type { BottomNavigationRoutes } from '@/src/routes/App.routes';
 import { colors, textMuted } from '@/src/theme/colors';
 import { cn } from '@/src/utils/cn';
 
-export function BottomNav( { state, navigation }: BottomTabBarProps ) {
+interface TabConfig {
+    route: keyof BottomNavigationRoutes;
+    label: string;
+    Icon: ComponentType<IconProps>;
+}
+
+const TABS: TabConfig[] = [
+    { route: 'Home', label: 'Home', Icon: HomeIcon },
+    { route: 'Dashboard', label: 'Dashboard', Icon: DashboardIcon },
+    { route: 'Settings', label: 'Config', Icon: SettingsIcon },
+];
+
+export function BottomNav({ state, navigation }: BottomTabBarProps) {
     const insets = useSafeAreaInsets();
-    const activeRoute = state.routeNames[ state.index ];
-    const iconColor = ( route: string ) => activeRoute === route ? colors.accent300 : textMuted(0.55);
-    const labelClass = ( route: string ) =>
-        cn('text-[11px] font-body-medium', activeRoute === route ? 'text-brand-300' : 'text-ink/55');
+    const activeRoute = state.routeNames[state.index];
 
     return (
         <View
             className="flex-row items-center justify-center gap-9 pt-2.5 bg-surface border-t border-t-divider"
-            style={ { paddingBottom: Math.max(insets.bottom, 10) + 16 } }
+            style={{ paddingBottom: Math.max(insets.bottom, 10) + 16 }}
         >
-            <Pressable className="items-center gap-[3px] py-1 px-2.5" onPress={ () => navigation.navigate('Home') } hitSlop={ 8 }>
-                <HomeIcon size={ 20 } color={ iconColor('Home') }/>
-                <Text className={ labelClass('Home') }>Home</Text>
-            </Pressable>
-            <Pressable className="items-center gap-[3px] py-1 px-2.5" onPress={ () => navigation.navigate('Dashboard') } hitSlop={ 8 }>
-                <DashboardIcon size={ 20 } color={ iconColor('Dashboard') }/>
-                <Text className={ labelClass('Dashboard') }>Dashboard</Text>
-            </Pressable>
-            <Pressable className="items-center gap-[3px] py-1 px-2.5" onPress={ () => navigation.navigate('Settings') } hitSlop={ 8 }>
-                <SettingsIcon size={ 20 } color={ iconColor('Settings') }/>
-                <Text className={ labelClass('Settings') }>Config</Text>
-            </Pressable>
+            {TABS.map(({ route, label, Icon }) => {
+                const active = activeRoute === route;
+
+                return (
+                    <Pressable
+                        key={route}
+                        className="items-center gap-[3px] py-1 px-2.5"
+                        onPress={() => navigation.navigate(route)}
+                        hitSlop={8}
+                    >
+                        <Icon size={20} color={active ? colors.accent300 : textMuted(0.55)} />
+                        <Text
+                            className={cn(
+                                'text-[11px] font-body-medium',
+                                active ? 'text-brand-300' : 'text-ink/55',
+                            )}
+                        >
+                            {label}
+                        </Text>
+                    </Pressable>
+                );
+            })}
         </View>
     );
 }

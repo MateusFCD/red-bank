@@ -1,12 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import {
-    GoogleAuthProvider,
-    signInWithCredential,
-    signInWithEmailAndPassword,
-} from 'firebase/auth';
-import { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -14,101 +7,18 @@ import { Button } from '@/src/components/Button';
 import { FormField } from '@/src/components/FormField';
 import { Input } from '@/src/components/Input';
 import { ScreenTransition } from '@/src/components/ScreenTransition';
-import { StackNavigationRoutes } from '@/src/routes/App.routes';
-import { auth } from '@/src/services/firebase';
-
+import { useLogin } from '@/src/hooks/useLogin';
+import type { StackNavigationRoutes } from '@/src/routes/App.routes';
 
 export function LoginScreen() {
     const insets = useSafeAreaInsets();
     const navigation = useNavigation<NativeStackNavigationProp<StackNavigationRoutes>>();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
 
+    const goHome = () => navigation.reset({ index: 0, routes: [{ name: 'Bottom' }] });
+    const goSignup = () => navigation.navigate('SignUp');
 
-    useEffect(() => {
-        GoogleSignin.configure({
-            webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-        });
-    }, []);
-
-    function goSignup() {
-        navigation.navigate('SignUp');
-    }
-
-    function goHome() {
-        navigation.reset({
-            index: 0,
-            routes: [{ name: 'Bottom' }],
-        });
-    }
-
-    async function handleLogin() {
-        if (!email.trim() || !password) {
-            setError('Informe seu e-mail e sua senha.');
-            return;
-        }
-
-        try {
-            setError('');
-            setLoading(true);
-            await signInWithEmailAndPassword(auth, email.trim(), password);
-            goHome();
-        } catch (error) {
-            if (error && typeof error === 'object' && 'code' in error) {
-                const code = String(error.code);
-
-                if (code === 'auth/invalid-api-key' || code === 'auth/configuration-not-found') {
-                    setError('A configuração do Firebase está inválida. Confira o arquivo .env.');
-                    return;
-                }
-            }
-
-            setError('E-mail ou senha inválidos.');
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    async function handleGoogleLogin() {
-        try {
-            setError('');
-            setLoading(true);
-
-            await GoogleSignin.hasPlayServices();
-
-            const response = await GoogleSignin.signIn();
-
-            if (response.type !== 'success') {
-                setLoading(false);
-                return;
-            }
-
-            const idToken = response.data?.idToken;
-
-            if (!idToken) {
-                throw new Error('Google não retornou o ID token.');
-            }
-
-            const credential = GoogleAuthProvider.credential(idToken);
-
-            await signInWithCredential(auth, credential);
-
-            goHome();
-
-
-        } catch (error) {
-            setError(
-                error instanceof Error
-                    ? error.message
-                    : 'Não foi possível entrar com o Google.'
-            );
-        } finally {
-            setLoading(false);
-        }
-    }
-
+    const { email, setEmail, password, setPassword, error, loading, loginWithEmail, loginWithGoogle } =
+        useLogin(goHome);
 
     return (
         <ScreenTransition className="bg-app">
@@ -153,7 +63,7 @@ export function LoginScreen() {
                             variant="primary"
                             block
                             className="mt-1.5"
-                            onPress={handleLogin}
+                            onPress={loginWithEmail}
                             loading={loading}
                         >
                             Entrar
@@ -162,7 +72,7 @@ export function LoginScreen() {
                         <Button
                             variant="secondary"
                             block
-                            onPress={handleGoogleLogin}
+                            onPress={loginWithGoogle}
                             disabled={loading}
                         >
                             Entrar com Google
