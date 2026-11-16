@@ -8,6 +8,7 @@ import { FormField } from '@/src/components/FormField';
 import { Input } from '@/src/components/Input';
 import { ChevronLeftIcon } from '@/src/components/icons';
 import { ScreenTransition } from '@/src/components/ScreenTransition';
+import { useSignup } from '@/src/hooks/useSignup';
 import { colors } from '@/src/theme/colors';
 import { StackNavigationRoutes } from "@/src/routes/App.routes";
 
@@ -18,6 +19,21 @@ export function SignupScreen() {
     const goLogin = () => {
         navigation.navigate('Login');
     };
+    const goHome = () => navigation.reset({ index: 0, routes: [{ name: 'Bottom' }] });
+
+    const {
+        name,
+        setName,
+        email,
+        setEmail,
+        password,
+        setPassword,
+        confirmPassword,
+        setConfirmPassword,
+        error,
+        loading,
+        signup,
+    } = useSignup(goHome);
 
     return (
         <ScreenTransition className="bg-app">
@@ -27,11 +43,6 @@ export function SignupScreen() {
                     showsVerticalScrollIndicator={ false }
                     keyboardShouldPersistTaps="handled"
                 >
-                    {/*
-                      * contentContainerStyle inline substituiria o contentContainerClassName
-                      * por inteiro, então o padding dinâmico (safe area) fica neste View,
-                      * que ocupa todo o content container (grow).
-                      */}
                     <View
                         className="grow px-[26px] pb-[30px] bg-app"
                         style={ { paddingTop: insets.top + 40 } }
@@ -48,6 +59,9 @@ export function SignupScreen() {
                                 <Input
                                     placeholder="Seu nome completo"
                                     autoCapitalize="words"
+                                    autoComplete="name"
+                                    value={name}
+                                    onChangeText={setName}
                                 />
                             </FormField>
 
@@ -57,6 +71,8 @@ export function SignupScreen() {
                                     keyboardType="email-address"
                                     autoCapitalize="none"
                                     autoComplete="email"
+                                    value={email}
+                                    onChangeText={setEmail}
                                 />
                             </FormField>
 
@@ -65,6 +81,8 @@ export function SignupScreen() {
                                     placeholder="Mínimo 6 caracteres"
                                     secureTextEntry
                                     autoCapitalize="none"
+                                    value={password}
+                                    onChangeText={setPassword}
                                 />
                             </FormField>
 
@@ -73,6 +91,8 @@ export function SignupScreen() {
                                     placeholder="Repita a senha"
                                     secureTextEntry
                                     autoCapitalize="none"
+                                    value={confirmPassword}
+                                    onChangeText={setConfirmPassword}
                                 />
                             </FormField>
 
@@ -80,9 +100,17 @@ export function SignupScreen() {
                                 variant="primary"
                                 block
                                 className="mt-1.5"
+                                onPress={signup}
+                                loading={loading}
                             >
                                 Criar conta
                             </Button>
+
+                            {error ? (
+                                <View className="bg-brand/14 rounded-[10px] py-[9px] px-3">
+                                    <Text className="text-brand-300 text-[12.5px] font-body">{error}</Text>
+                                </View>
+                            ) : null}
                         </View>
 
                         <View className="flex-row justify-center items-center gap-0.5 mt-[22px]">
