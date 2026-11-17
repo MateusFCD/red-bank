@@ -1,4 +1,12 @@
-import { AuthContext } from '@/src/context/AuthContext';
-import { createContextHook } from '@/src/hooks/createContextHook';
+import { useShallow } from 'zustand/react/shallow';
 
-export const useAuth = createContextHook(AuthContext, 'useAuth');
+import { useAuthStore } from '@/src/stores/authStore';
+
+export function useAuth() {
+    return useAuthStore(
+        useShallow((state) => ({
+            user: state.user,
+            logout: state.logout,
+        })),
+    );
+}

@@ -1,4 +1,19 @@
-import { TransactionsContext } from '@/src/context/TransactionsContext';
-import { createContextHook } from '@/src/hooks/createContextHook';
+import { useShallow } from 'zustand/react/shallow';
 
-export const useTransactions = createContextHook(TransactionsContext, 'useTransactions');
+import { useTransactionsStore } from '@/src/stores/transactionsStore';
+
+export function useTransactions() {
+    return useTransactionsStore(
+        useShallow((state) => ({
+            transactions: state.transactions,
+            loading: state.loading,
+            loadingMore: state.loadingMore,
+            hasMore: state.hasMore,
+            loadTransactions: state.loadTransactions,
+            loadMoreTransactions: state.loadMoreTransactions,
+            createTransaction: state.createTransaction,
+            editTransaction: state.editTransaction,
+            removeTransaction: state.removeTransaction,
+        })),
+    );
+}

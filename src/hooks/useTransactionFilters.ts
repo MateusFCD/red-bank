@@ -1,7 +1,16 @@
-import { TransactionFiltersContext } from '@/src/context/TransactionFiltersContext';
-import { createContextHook } from '@/src/hooks/createContextHook';
+import { useShallow } from 'zustand/react/shallow';
 
-export const useTransactionFilters = createContextHook(
-    TransactionFiltersContext,
-    'useTransactionFilters',
-);
+import { countAppliedFilters } from '@/src/domain/filters';
+import { useTransactionFiltersStore } from '@/src/stores/transactionFiltersStore';
+
+export function useTransactionFilters() {
+    return useTransactionFiltersStore(
+        useShallow((state) => ({
+            filters: state.filters,
+            appliedFilterCount: countAppliedFilters(state.filters),
+            setFilter: state.setFilter,
+            toggleCategory: state.toggleCategory,
+            clearFilters: state.clearFilters,
+        })),
+    );
+}

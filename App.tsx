@@ -11,7 +11,7 @@ import {
 import * as SplashScreen from 'expo-splash-screen';
 
 import { Routes } from "@/src/routes";
-import { AppProvider } from "@/src/context/AppContext";
+import "@/src/stores";
 import { useEffect } from "react";
 
 SplashScreen.preventAutoHideAsync();
@@ -37,9 +37,7 @@ export default function App() {
     return (
         <GluestackUIProvider mode="dark">
             <StatusBar style="light" translucent/>
-            <AppProvider>
-                <Routes/>
-            </AppProvider>
+            <Routes/>
         </GluestackUIProvider>
     );
 }

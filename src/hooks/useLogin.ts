@@ -1,12 +1,7 @@
 import { useEffect, useState } from 'react';
 
-import {
-    configureGoogleSignIn,
-    getEmailLoginErrorMessage,
-    getGoogleLoginErrorMessage,
-    signInWithEmail,
-    signInWithGoogle,
-} from '@/src/services/auth';
+import { prepareGoogleSignIn, signInWithEmail, signInWithGoogle } from '@/src/composition/auth';
+import { validateLogin } from '@/src/domain/auth/validateAuth';
 
 /** Estado e ações do formulário de login. `onSuccess` decide o que fazer após autenticar. */
 export function useLogin(onSuccess: () => void) {
@@ -15,34 +10,38 @@ export function useLogin(onSuccess: () => void) {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    useEffect(configureGoogleSignIn, []);
+    useEffect(prepareGoogleSignIn, []);
 
-    async function run(action: () => Promise<boolean>, toMessage: (error: unknown) => string) {
+    async function loginWithEmail() {
+        const validation = validateLogin(email, password);
+        if (validation) {
+            setError(validation);
+            return;
+        }
+
         try {
             setError('');
             setLoading(true);
-            if (await action()) onSuccess();
-        } catch (err) {
-            setError(toMessage(err));
+
+            const result = await signInWithEmail(email, password);
+            if (result.ok) onSuccess();
+            else setError(result.message);
         } finally {
             setLoading(false);
         }
     }
 
-    function loginWithEmail() {
-        if (!email.trim() || !password) {
-            setError('Informe seu e-mail e sua senha.');
-            return;
+    async function loginWithGoogle() {
+        try {
+            setError('');
+            setLoading(true);
+
+            const result = await signInWithGoogle();
+            if (result.ok) onSuccess();
+            else if (!result.cancelled) setError(result.message);
+        } finally {
+            setLoading(false);
         }
-
-        return run(async () => {
-            await signInWithEmail(email, password);
-            return true;
-        }, getEmailLoginErrorMessage);
-    }
-
-    function loginWithGoogle() {
-        return run(signInWithGoogle, getGoogleLoginErrorMessage);
     }
 
     return { email, setEmail, password, setPassword, error, loading, loginWithEmail, loginWithGoogle };
