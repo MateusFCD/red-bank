@@ -69,13 +69,14 @@ export async function getTransactions(lastDoc?: DocumentSnapshot | null): Promis
     };
 }
 
+/** Sem `receipt`, o comprovante salvo no servidor é mantido. */
+export type TransactionUpdate = Omit<TransactionInput, 'receipt'> & Partial<Pick<TransactionInput, 'receipt'>>;
+
 export async function updateTransaction(
     transactionId: string,
-    transaction: TransactionInput,
-): Promise<Transaction> {
+    transaction: TransactionUpdate,
+): Promise<void> {
     await updateDoc(transactionDoc(transactionId), { ...transaction });
-
-    return { id: transactionId, ...transaction };
 }
 
 export async function deleteTransaction(transactionId: string): Promise<void> {

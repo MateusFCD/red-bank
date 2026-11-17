@@ -8,10 +8,10 @@ export interface AuthState {
     logout: () => Promise<void>;
 }
 
-const logoutListeners = new Set<() => void>();
+const logoutListeners = new Set<(previousUser: AuthUser) => void>();
 
-/** Registra limpeza de outros stores quando a sessão termina. */
-export function onAuthLogout(listener: () => void) {
+/** Registra limpeza de outros stores quando a sessão termina (recebe o usuário que saiu). */
+export function onAuthLogout(listener: (previousUser: AuthUser) => void) {
     logoutListeners.add(listener);
 }
 
@@ -25,6 +25,6 @@ subscribeToSession((user) => {
     useAuthStore.setState({ user });
 
     if (previous && !user) {
-        logoutListeners.forEach((listener) => listener());
+        logoutListeners.forEach((listener) => listener(previous));
     }
 });

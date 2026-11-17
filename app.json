@@ -32,7 +32,8 @@
       "expo-web-browser",
       "@react-native-google-signin/google-signin",
       "@react-native-community/datetimepicker",
-      "./plugins/withPodsDeploymentTarget"
+      "./plugins/withPodsDeploymentTarget",
+      "expo-secure-store"
     ]
   }
 }
