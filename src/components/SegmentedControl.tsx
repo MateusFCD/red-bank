@@ -1,6 +1,6 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
-import { colors, fonts, radius } from '@/src/theme/colors';
+import { cn } from '@/src/utils/cn';
 
 export interface SegmentOption<T extends string> {
   value: T;
@@ -11,58 +11,34 @@ export function SegmentedControl<T extends string>({
   options,
   value,
   onChange,
-  style,
+  className,
 }: {
   options: SegmentOption<T>[];
   value: T;
   onChange: (value: T) => void;
-  style?: object;
+  className?: string;
 }) {
   return (
-    <View style={[styles.seg, style]}>
+    <View className={cn('flex-row self-start rounded-md border border-divider overflow-hidden', className)}>
       {options.map((opt, i) => {
         const selected = opt.value === value;
         return (
           <Pressable
             key={opt.value}
             onPress={() => onChange(opt.value)}
-            style={[styles.opt, i > 0 && styles.optDivider, selected && styles.optSelected]}
+            className={cn('py-[7px] px-3', i > 0 && 'border-l border-l-divider', selected && 'bg-brand')}
           >
-            <Text style={[styles.label, selected && styles.labelSelected]}>{opt.label}</Text>
+            <Text
+              className={cn(
+                'text-[13px]',
+                selected ? 'text-app font-body-medium' : 'text-ink font-body',
+              )}
+            >
+              {opt.label}
+            </Text>
           </Pressable>
         );
       })}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  seg: {
-    flexDirection: 'row',
-    alignSelf: 'flex-start',
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.divider,
-    overflow: 'hidden',
-  },
-  opt: {
-    paddingVertical: 7,
-    paddingHorizontal: 12,
-  },
-  optDivider: {
-    borderLeftWidth: 1,
-    borderLeftColor: colors.divider,
-  },
-  optSelected: {
-    backgroundColor: colors.accent,
-  },
-  label: {
-    fontSize: 13,
-    color: colors.text,
-    fontFamily: fonts.body,
-  },
-  labelSelected: {
-    color: colors.bg,
-    fontFamily: fonts.bodyMedium,
-  },
-});

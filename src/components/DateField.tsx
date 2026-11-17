@@ -4,7 +4,7 @@ import { Platform, Pressable, View } from 'react-native';
 
 import { FormField } from '@/src/components/FormField';
 import { Input } from '@/src/components/Input';
-import { formatDateDisplay } from '@/src/utils/format';
+import { dateToIso, formatDateDisplay, isoToDate } from '@/src/utils/format';
 
 export function DateField({
   label,
@@ -27,11 +27,7 @@ export function DateField({
     if (Platform.OS === 'android' && event.type === 'dismissed') return;
     if (!selectedDate) return;
 
-    const year = selectedDate.getFullYear();
-    const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
-    const day = String(selectedDate.getDate()).padStart(2, '0');
-
-    onChange(`${year}-${month}-${day}`);
+    onChange(dateToIso(selectedDate));
   }
 
   return (
@@ -48,7 +44,7 @@ export function DateField({
 
       {open && (
         <DateTimePicker
-          value={value ? new Date(`${value}T12:00:00`) : new Date()}
+          value={isoToDate(value)}
           mode="date"
           display="default"
           onChange={handleChange}

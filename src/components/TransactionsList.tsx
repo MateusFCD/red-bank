@@ -1,153 +1,131 @@
+import { memo, useCallback } from 'react';
 import {
     ActivityIndicator,
     FlatList,
     Pressable,
-    StyleSheet,
+    RefreshControl,
     Text,
     View,
-} from "react-native";
+    type ListRenderItem,
+} from 'react-native';
 
-import type { Transaction } from "@/src/interfaces";
-import { colors, textMuted } from "@/src/theme/colors";
-
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-
-import type { StackNavigationRoutes } from "@/src/routes/App.routes";
-import { formatCurrency, formatDateDisplay } from "../utils/format";
+import type { Transaction } from '@/src/interfaces';
+import { colors } from '@/src/theme/colors';
+import { cn } from '@/src/utils/cn';
+import { formatCurrency, formatDateDisplay } from '@/src/utils/format';
 
 interface TransactionListProps {
     transactions: Transaction[];
+    /** Primeira página sendo carregada. */
+    loading: boolean;
+    /** Próxima página sendo carregada. */
     loadingMore: boolean;
+    hasMore: boolean;
+    refreshing: boolean;
+    onRefresh: () => void;
     onLoadMore: () => void;
+    onPressItem: (transaction: Transaction) => void;
 }
+
+const TransactionListItem = memo(function TransactionListItem({
+    transaction,
+    onPress,
+}: {
+    transaction: Transaction;
+    onPress: (transaction: Transaction) => void;
+}) {
+    const isIncome = transaction.type === 'income';
+
+    return (
+        <Pressable
+            className="flex-row items-center justify-between py-[18px] border-b border-b-ink/12"
+            onPress={() => onPress(transaction)}
+        >
+            <View className="flex-1 mr-4">
+                <Text className="text-[16px] font-semibold text-ink">{transaction.desc}</Text>
+                <Text className="mt-[5px] text-[13px] text-ink/65">
+                    {transaction.category} · {formatDateDisplay(transaction.date)}
+                </Text>
+            </View>
+
+            <Text className={cn('text-[16px] font-bold', isIncome ? 'text-[#7FCF9A]' : 'text-brand-300')}>
+                {isIncome ? '+' : '-'}
+                {formatCurrency(transaction.amount)}
+            </Text>
+        </Pressable>
+    );
+});
+
+function ListFooter({ loadingMore, hasMore, isEmpty }: { loadingMore: boolean; hasMore: boolean; isEmpty: boolean }) {
+    if (loadingMore) return <ActivityIndicator className="my-5" color={colors.accent} />;
+    if (!hasMore && !isEmpty) {
+        return <Text className="my-5 text-center text-[12px] text-ink/45">Você chegou ao fim da lista.</Text>;
+    }
+    return null;
+}
+
+const keyExtractor = (item: Transaction) => item.id;
 
 export function TransactionList({
     transactions,
+    loading,
     loadingMore,
+    hasMore,
+    refreshing,
+    onRefresh,
     onLoadMore,
+    onPressItem,
 }: TransactionListProps) {
+    // `onEndReached` pode disparar várias vezes seguidas; só pede a próxima página
+    // quando há mais dados e nenhuma requisição em andamento. Se a lista (ex.: filtrada)
+    // não preencher a tela, ele dispara sozinho e continua buscando até preencher.
+    const handleEndReached = useCallback(() => {
+        if (!hasMore || loadingMore || loading) return;
+        onLoadMore();
+    }, [hasMore, loadingMore, loading, onLoadMore]);
 
-    const navigation =
-        useNavigation<NativeStackNavigationProp<StackNavigationRoutes>>();
+    const renderItem = useCallback<ListRenderItem<Transaction>>(
+        ({ item }) => <TransactionListItem transaction={item} onPress={onPressItem} />,
+        [onPressItem],
+    );
+
+    const isEmpty = transactions.length === 0;
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>
-                Transações recentes
-            </Text>
+        <View className="flex-1 mt-8">
+            <Text className="text-[22px] font-bold text-ink mb-[18px]">Transações recentes</Text>
 
             <FlatList
                 data={transactions}
-                keyExtractor={(item) => item.id}
+                keyExtractor={keyExtractor}
+                renderItem={renderItem}
                 showsVerticalScrollIndicator={false}
-                onEndReached={onLoadMore}
-                onEndReachedThreshold={0.5}
+                // Lazy loading / paginação
+                onEndReached={handleEndReached}
+                onEndReachedThreshold={0.4}
+                // Virtualização: renderiza só o que está perto da área visível
+                initialNumToRender={10}
+                maxToRenderPerBatch={10}
+                updateCellsBatchingPeriod={50}
+                windowSize={7}
+                removeClippedSubviews
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        tintColor={colors.accent}
+                        colors={[colors.accent]}
+                    />
+                }
                 ListEmptyComponent={
-                    <Text style={styles.emptyText}>
-                        Nenhuma transação encontrada.
-                    </Text>
+                    loading ? (
+                        <ActivityIndicator className="my-8" color={colors.accent} />
+                    ) : (
+                        <Text className="text-[14px] text-ink/65">Nenhuma transação encontrada.</Text>
+                    )
                 }
-                ListFooterComponent={
-                    loadingMore ? (
-                        <ActivityIndicator style={styles.loading} />
-                    ) : null
-                }
-                renderItem={({ item: transaction }) => (
-                    <Pressable
-                        style={styles.transactionItem}
-                        onPress={() =>
-                            navigation.navigate("TransactionDetails", {
-                                transaction,
-                            })
-                        }
-                    >
-                        <View style={styles.transactionInfo}>
-                            <Text style={styles.transactionDesc}>
-                                {transaction.desc}
-                            </Text>
-
-                            <Text style={styles.transactionCategory}>
-                                {transaction.category} · {formatDateDisplay(transaction.date)}
-                            </Text>
-                        </View>
-
-                        <Text
-                            style={[
-                                styles.transactionAmount,
-                                transaction.type === "income"
-                                    ? styles.income
-                                    : styles.expense,
-                            ]}
-                        >
-                            {transaction.type === "income" ? "+" : "-"}
-                            {formatCurrency(transaction.amount)}
-                        </Text>
-                    </Pressable>
-                )}
+                ListFooterComponent={<ListFooter loadingMore={loadingMore} hasMore={hasMore} isEmpty={isEmpty} />}
             />
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        marginTop: 32,
-    },
-
-    title: {
-        fontSize: 22,
-        fontWeight: "700",
-        color: colors.text,
-        marginBottom: 18,
-    },
-
-    transactionItem: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        paddingVertical: 18,
-        borderBottomWidth: 1,
-        borderBottomColor: textMuted(0.12),
-    },
-
-    transactionInfo: {
-        flex: 1,
-        marginRight: 16,
-    },
-
-    transactionDesc: {
-        fontSize: 16,
-        fontWeight: "600",
-        color: colors.text,
-    },
-
-    transactionCategory: {
-        marginTop: 5,
-        fontSize: 13,
-        color: textMuted(0.65),
-    },
-
-    transactionAmount: {
-        fontSize: 16,
-        fontWeight: "700",
-    },
-
-    income: {
-        color: "#7FCF9A",
-    },
-
-    expense: {
-        color: colors.accent300,
-    },
-
-    emptyText: {
-        fontSize: 14,
-        color: textMuted(0.65),
-    },
-
-    loading: {
-        marginVertical: 20,
-    },
-});

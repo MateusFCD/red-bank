@@ -1,54 +1,56 @@
+import type { ComponentType } from 'react';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { HomeIcon, SettingsIcon, DashboardIcon } from '@/src/components/icons';
-import { colors, fonts, textMuted } from '@/src/theme/colors';
+import { DashboardIcon, HomeIcon, SettingsIcon, type IconProps } from '@/src/components/icons';
+import type { BottomNavigationRoutes } from '@/src/routes/App.routes';
+import { colors, textMuted } from '@/src/theme/colors';
+import { cn } from '@/src/utils/cn';
 
-export function BottomNav( { state, navigation }: BottomTabBarProps ) {
+interface TabConfig {
+    route: keyof BottomNavigationRoutes;
+    label: string;
+    Icon: ComponentType<IconProps>;
+}
+
+const TABS: TabConfig[] = [
+    { route: 'Home', label: 'Home', Icon: HomeIcon },
+    { route: 'Dashboard', label: 'Dashboard', Icon: DashboardIcon },
+    { route: 'Settings', label: 'Config', Icon: SettingsIcon },
+];
+
+export function BottomNav({ state, navigation }: BottomTabBarProps) {
     const insets = useSafeAreaInsets();
-    const activeRoute = state.routeNames[ state.index ];
-    const homeColor = activeRoute === 'Home' ? colors.accent300 : textMuted(0.55);
-    const settingsColor = activeRoute === 'Settings' ? colors.accent300 : textMuted(0.55);
-    const DashboardColor = activeRoute === 'Dashboard' ? colors.accent300 : textMuted(0.55);
+    const activeRoute = state.routeNames[state.index];
 
     return (
-        <View style={ [styles.wrap, { paddingBottom: Math.max(insets.bottom, 10) + 16 }] }>
-            <Pressable style={ styles.item } onPress={ () => navigation.navigate('Home') } hitSlop={ 8 }>
-                <HomeIcon size={ 20 } color={ homeColor }/>
-                <Text style={ [styles.label, { color: homeColor }] }>Home</Text>
-            </Pressable>
-            <Pressable style={ styles.item } onPress={ () => navigation.navigate('Dashboard') } hitSlop={ 8 }>
-                <DashboardIcon size={ 20 } color={ DashboardColor }/>
-                <Text style={ [styles.label, { color: DashboardColor }] }>Dashboard</Text>
-            </Pressable>
-            <Pressable style={ styles.item } onPress={ () => navigation.navigate('Settings') } hitSlop={ 8 }>
-                <SettingsIcon size={ 20 } color={ settingsColor }/>
-                <Text style={ [styles.label, { color: settingsColor }] }>Config</Text>
-            </Pressable>
+        <View
+            className="flex-row items-center justify-center gap-9 pt-2.5 bg-surface border-t border-t-divider"
+            style={{ paddingBottom: Math.max(insets.bottom, 10) + 16 }}
+        >
+            {TABS.map(({ route, label, Icon }) => {
+                const active = activeRoute === route;
+
+                return (
+                    <Pressable
+                        key={route}
+                        className="items-center gap-[3px] py-1 px-2.5"
+                        onPress={() => navigation.navigate(route)}
+                        hitSlop={8}
+                    >
+                        <Icon size={20} color={active ? colors.accent300 : textMuted(0.55)} />
+                        <Text
+                            className={cn(
+                                'text-[11px] font-body-medium',
+                                active ? 'text-brand-300' : 'text-ink/55',
+                            )}
+                        >
+                            {label}
+                        </Text>
+                    </Pressable>
+                );
+            })}
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    wrap: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 36,
-        paddingTop: 10,
-        backgroundColor: colors.surface,
-        borderTopWidth: 1,
-        borderTopColor: colors.divider,
-    },
-    item: {
-        alignItems: 'center',
-        gap: 3,
-        paddingVertical: 4,
-        paddingHorizontal: 10,
-    },
-    label: {
-        fontSize: 11,
-        fontFamily: fonts.bodyMedium,
-    },
-});
