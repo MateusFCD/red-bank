@@ -1,10 +1,10 @@
-import type { User } from 'firebase/auth';
 import { create } from 'zustand';
 
-import { getCurrentUser, signOutUser, subscribeToAuthChanges } from '@/src/services/auth';
+import { getCurrentSession, signOut, subscribeToSession } from '@/src/composition/auth';
+import type { AuthUser } from '@/src/domain/auth/AuthUser';
 
 export interface AuthState {
-    user: User | null;
+    user: AuthUser | null;
     logout: () => Promise<void>;
 }
 
@@ -16,11 +16,11 @@ export function onAuthLogout(listener: () => void) {
 }
 
 export const useAuthStore = create<AuthState>(() => ({
-    user: getCurrentUser(),
-    logout: signOutUser,
+    user: getCurrentSession(),
+    logout: signOut,
 }));
 
-subscribeToAuthChanges((user) => {
+subscribeToSession((user) => {
     const previous = useAuthStore.getState().user;
     useAuthStore.setState({ user });
 

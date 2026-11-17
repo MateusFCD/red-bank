@@ -1,7 +1,9 @@
 import { useState } from 'react';
 
-import { getSignupErrorMessage, signUpWithEmail } from '@/src/services/auth';
+import { signUpWithEmail } from '@/src/composition/auth';
+import { validateSignUp } from '@/src/domain/auth/validateAuth';
 
+/** Estado e ação do formulário de cadastro. `onSuccess` decide o que fazer após criar a conta. */
 export function useSignup(onSuccess: () => void) {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -11,28 +13,19 @@ export function useSignup(onSuccess: () => void) {
     const [loading, setLoading] = useState(false);
 
     async function signup() {
-        if (!name.trim() || !email.trim() || !password || !confirmPassword) {
-            setError('Preencha nome, e-mail e senha.');
-            return;
-        }
-
-        if (password.length < 6) {
-            setError('A senha precisa ter pelo menos 6 caracteres.');
-            return;
-        }
-
-        if (password !== confirmPassword) {
-            setError('As senhas não coincidem.');
+        const validation = validateSignUp({ name, email, password, confirmPassword });
+        if (validation) {
+            setError(validation);
             return;
         }
 
         try {
             setError('');
             setLoading(true);
-            await signUpWithEmail(name, email, password);
-            onSuccess();
-        } catch (err) {
-            setError(getSignupErrorMessage(err));
+
+            const result = await signUpWithEmail({ name, email, password });
+            if (result.ok) onSuccess();
+            else setError(result.message);
         } finally {
             setLoading(false);
         }

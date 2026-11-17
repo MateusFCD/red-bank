@@ -1,4 +1,4 @@
-import type { User } from 'firebase/auth';
+import type { AuthUser } from '@/src/domain/auth/AuthUser';
 
 export interface UserDisplayInfo {
     name: string;
@@ -6,7 +6,7 @@ export interface UserDisplayInfo {
     initial: string;
 }
 
-export function getUserDisplayInfo(user: User | null): UserDisplayInfo {
+export function getUserDisplayInfo(user: AuthUser | null): UserDisplayInfo {
     const source = (user?.displayName || user?.email || 'U').trim();
 
     return {
