@@ -1,7 +1,5 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-
-import { colors, fonts, textMuted } from '@/src/theme/colors';
+import { Text, View } from 'react-native';
 
 export function FormField({
   label,
@@ -13,26 +11,10 @@ export function FormField({
   children: ReactNode;
 }) {
   return (
-    <View style={styles.field}>
-      <Text style={styles.label}>{label}</Text>
+    <View className="w-full">
+      <Text className="text-[12px] mb-[5px] text-ink/70 font-body">{label}</Text>
       {children}
-      {error ? <Text style={styles.error}>{error}</Text> : null}
+      {error ? <Text className="text-brand-400 text-[11.5px] mt-[5px] font-body">{error}</Text> : null}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  field: { width: '100%' },
-  label: {
-    fontSize: 12,
-    marginBottom: 5,
-    color: textMuted(0.7),
-    fontFamily: fonts.body,
-  },
-  error: {
-    color: colors.accent400,
-    fontSize: 11.5,
-    marginTop: 5,
-    fontFamily: fonts.body,
-  },
-});

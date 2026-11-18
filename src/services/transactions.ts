@@ -16,106 +16,69 @@ import {
 import { auth, db } from './firebase';
 import type { Transaction } from '@/src/interfaces';
 
-const transactionsCollection = (uid: string) =>
-    collection(db, 'users', uid, 'transactions');
+const PAGE_SIZE = 20;
 
-export async function addTransaction(
-    transaction: Omit<Transaction, 'id'>
-) {
+export type TransactionInput = Omit<Transaction, 'id'>;
+
+export interface TransactionsPage {
+    transactions: Transaction[];
+    lastDoc: DocumentSnapshot | null;
+    hasMore: boolean;
+}
+
+function requireUid(): string {
     const user = auth.currentUser;
 
     if (!user) {
         throw new Error('Usuário não autenticado.');
     }
 
-    const docRef = await addDoc(transactionsCollection(user.uid), {
+    return user.uid;
+}
+
+const transactionsCollection = () => collection(db, 'users', requireUid(), 'transactions');
+
+const transactionDoc = (transactionId: string) => doc(transactionsCollection(), transactionId);
+
+export async function addTransaction(transaction: TransactionInput): Promise<Transaction> {
+    const docRef = await addDoc(transactionsCollection(), {
         ...transaction,
         createdAt: Timestamp.now(),
     });
 
-    return {
-        id: docRef.id,
-        ...transaction,
-    };
+    return { id: docRef.id, ...transaction };
 }
 
-export async function getTransactions(
-    lastDoc?: DocumentSnapshot,
-) {
-    const user = auth.currentUser;
-
-    if (!user) {
-        throw new Error('Usuário não autenticado.');
-    }
-
-    const constraints = [
-        orderBy('date', 'desc'),
-        limit(20),
-        ...(lastDoc ? [startAfter(lastDoc)] : []),
-    ];
-
+export async function getTransactions(lastDoc?: DocumentSnapshot | null): Promise<TransactionsPage> {
     const q = query(
-        transactionsCollection(user.uid),
-        ...constraints,
+        transactionsCollection(),
+        orderBy('date', 'desc'),
+        limit(PAGE_SIZE),
+        ...(lastDoc ? [startAfter(lastDoc)] : []),
     );
 
     const snapshot = await getDocs(q);
 
-    const transactions: Transaction[] = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as Omit<Transaction, 'id'>),
-    }));
-
     return {
-        transactions,
+        transactions: snapshot.docs.map((d) => ({
+            id: d.id,
+            ...(d.data() as TransactionInput),
+        })),
         lastDoc: snapshot.docs[snapshot.docs.length - 1] ?? null,
-        hasMore: snapshot.docs.length === 20,
+        hasMore: snapshot.docs.length === PAGE_SIZE,
     };
 }
 
-export async function deleteTransaction(transactionId: string) {
-    const user = auth.currentUser;
-
-    if (!user) {
-        throw new Error("Usuário não autenticado.");
-    }
-
-    const transactionRef = collection(
-        db,
-        "users",
-        user.uid,
-        "transactions"
-    );
-
-    await deleteDoc(
-        doc(transactionRef, transactionId)
-    );
-}
+/** Sem `receipt`, o comprovante salvo no servidor é mantido. */
+export type TransactionUpdate = Omit<TransactionInput, 'receipt'> & Partial<Pick<TransactionInput, 'receipt'>>;
 
 export async function updateTransaction(
     transactionId: string,
-    transaction: Omit<Transaction, 'id'>
-) {
-    const user = auth.currentUser;
+    transaction: TransactionUpdate,
+): Promise<void> {
+    await updateDoc(transactionDoc(transactionId), { ...transaction });
+}
 
-    if (!user) {
-        throw new Error('Usuário não autenticado.');
-    }
-
-    const transactionRef = doc(
-        db,
-        'users',
-        user.uid,
-        'transactions',
-        transactionId
-    );
-
-    await updateDoc(transactionRef, {
-        ...transaction,
-    });
-
-    return {
-        id: transactionId,
-        ...transaction,
-    };
+export async function deleteTransaction(transactionId: string): Promise<void> {
+    await deleteDoc(transactionDoc(transactionId));
 }

@@ -1,10 +1,11 @@
 import { forwardRef } from 'react';
-import { StyleSheet, TextInput, type TextInputProps } from 'react-native';
+import { TextInput, type TextInputProps } from 'react-native';
 
-import { colors, fonts, radius, textMuted } from '@/src/theme/colors';
+import { colors, textMuted } from '@/src/theme/colors';
+import { cn } from '@/src/utils/cn';
 
 export const Input = forwardRef<TextInput, TextInputProps>(function Input(
-  { style, ...props },
+  { className, ...props },
   ref,
 ) {
   return (
@@ -12,24 +13,11 @@ export const Input = forwardRef<TextInput, TextInputProps>(function Input(
       ref={ref}
       placeholderTextColor={textMuted(0.45)}
       selectionColor={colors.accent}
-      style={[styles.input, style]}
+      className={cn(
+        'w-full min-h-[42px] py-1.5 px-3 text-[14px] text-ink bg-surface border border-divider rounded-md font-body',
+        className,
+      )}
       {...props}
     />
   );
-});
-
-const styles = StyleSheet.create({
-  input: {
-    width: '100%',
-    minHeight: 42,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    fontSize: 14,
-    color: colors.text,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.divider,
-    borderRadius: radius.md,
-    fontFamily: fonts.body,
-  },
 });

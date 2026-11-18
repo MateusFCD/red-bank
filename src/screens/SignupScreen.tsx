@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/src/components/Button';
@@ -8,7 +8,8 @@ import { FormField } from '@/src/components/FormField';
 import { Input } from '@/src/components/Input';
 import { ChevronLeftIcon } from '@/src/components/icons';
 import { ScreenTransition } from '@/src/components/ScreenTransition';
-import { colors, fonts, textMuted } from '@/src/theme/colors';
+import { useSignup } from '@/src/hooks/useSignup';
+import { colors } from '@/src/theme/colors';
 import { StackNavigationRoutes } from "@/src/routes/App.routes";
 
 export function SignupScreen() {
@@ -18,118 +19,109 @@ export function SignupScreen() {
     const goLogin = () => {
         navigation.navigate('Login');
     };
+    const goHome = () => navigation.reset({ index: 0, routes: [{ name: 'Bottom' }] });
+
+    const {
+        name,
+        setName,
+        email,
+        setEmail,
+        password,
+        setPassword,
+        confirmPassword,
+        setConfirmPassword,
+        error,
+        loading,
+        signup,
+    } = useSignup(goHome);
 
     return (
-        <ScreenTransition style={ { backgroundColor: colors.bg } }>
-            <KeyboardAvoidingView style={ styles.flex } behavior={ Platform.OS === 'ios' ? 'padding' : undefined }>
+        <ScreenTransition className="bg-app">
+            <KeyboardAvoidingView className="flex-1" behavior={ Platform.OS === 'ios' ? 'padding' : undefined }>
                 <ScrollView
-                    contentContainerStyle={ [styles.container, { paddingTop: insets.top + 40 }] }
+                    contentContainerClassName="grow"
                     showsVerticalScrollIndicator={ false }
                     keyboardShouldPersistTaps="handled"
                 >
-                    <Pressable style={ styles.back } onPress={ goLogin } hitSlop={ 8 }>
-                        <ChevronLeftIcon size={ 19 } color={ colors.text }/>
-                    </Pressable>
+                    <View
+                        className="grow px-[26px] pb-[30px] bg-app"
+                        style={ { paddingTop: insets.top + 40 } }
+                    >
+                        <Pressable className="w-8 h-8 items-center justify-center mb-[18px]" onPress={ goLogin } hitSlop={ 8 }>
+                            <ChevronLeftIcon size={ 19 } color={ colors.text }/>
+                        </Pressable>
 
-                    <Text style={ styles.brand }>Criar conta</Text>
-                    <Text style={ styles.subtitle }>Leva menos de um minuto</Text>
+                        <Text className="font-heading text-[26px] text-ink mb-1.5">Criar conta</Text>
+                        <Text className="text-[13px] text-ink/60 mb-7 font-body">Leva menos de um minuto</Text>
 
-                    <View style={ styles.fields }>
-                        <FormField label="Nome">
-                            <Input
-                                placeholder="Seu nome completo"
-                                autoCapitalize="words"
-                            />
-                        </FormField>
+                        <View className="gap-3.5">
+                            <FormField label="Nome">
+                                <Input
+                                    placeholder="Seu nome completo"
+                                    autoCapitalize="words"
+                                    autoComplete="name"
+                                    value={name}
+                                    onChangeText={setName}
+                                />
+                            </FormField>
 
-                        <FormField label="E-mail">
-                            <Input
-                                placeholder="voce@email.com"
-                                keyboardType="email-address"
-                                autoCapitalize="none"
-                                autoComplete="email"
-                            />
-                        </FormField>
+                            <FormField label="E-mail">
+                                <Input
+                                    placeholder="voce@email.com"
+                                    keyboardType="email-address"
+                                    autoCapitalize="none"
+                                    autoComplete="email"
+                                    value={email}
+                                    onChangeText={setEmail}
+                                />
+                            </FormField>
 
-                        <FormField label="Senha">
-                            <Input
-                                placeholder="Mínimo 6 caracteres"
-                                secureTextEntry
-                                autoCapitalize="none"
-                            />
-                        </FormField>
+                            <FormField label="Senha">
+                                <Input
+                                    placeholder="Mínimo 6 caracteres"
+                                    secureTextEntry
+                                    autoCapitalize="none"
+                                    value={password}
+                                    onChangeText={setPassword}
+                                />
+                            </FormField>
 
-                        <FormField label="Confirmar senha">
-                            <Input
-                                placeholder="Repita a senha"
-                                secureTextEntry
-                                autoCapitalize="none"
-                            />
-                        </FormField>
+                            <FormField label="Confirmar senha">
+                                <Input
+                                    placeholder="Repita a senha"
+                                    secureTextEntry
+                                    autoCapitalize="none"
+                                    value={confirmPassword}
+                                    onChangeText={setConfirmPassword}
+                                />
+                            </FormField>
 
-                        <Button
-                            variant="primary"
-                            block
-                            style={ styles.submit }
-                        >
-                            Criar conta
-                        </Button>
-                    </View>
+                            <Button
+                                variant="primary"
+                                block
+                                className="mt-1.5"
+                                onPress={signup}
+                                loading={loading}
+                            >
+                                Criar conta
+                            </Button>
 
-                    <View style={ styles.footer }>
-                        <Text style={ styles.footerText }>Já tem conta?</Text>
-                        <Button variant="ghost" onPress={ goLogin }>
-                            Entrar
-                        </Button>
+                            {error ? (
+                                <View className="bg-brand/14 rounded-[10px] py-[9px] px-3">
+                                    <Text className="text-brand-300 text-[12.5px] font-body">{error}</Text>
+                                </View>
+                            ) : null}
+                        </View>
+
+                        <View className="flex-row justify-center items-center gap-0.5 mt-[22px]">
+                            <Text className="text-[13px] text-ink font-body">Já tem conta?</Text>
+                            <Button variant="ghost" onPress={ goLogin }>
+                                Entrar
+                            </Button>
+                        </View>
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
         </ScreenTransition>
     );
 }
-
-const styles = StyleSheet.create({
-    flex: { flex: 1 },
-    container: {
-        flexGrow: 1,
-        paddingHorizontal: 26,
-        paddingBottom: 30,
-        backgroundColor: colors.bg,
-    },
-    back: {
-        width: 32,
-        height: 32,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 18,
-    },
-    brand: {
-        fontFamily: fonts.heading,
-        fontSize: 26,
-        color: colors.text,
-        marginBottom: 6,
-    },
-    subtitle: {
-        fontSize: 13,
-        color: textMuted(0.6),
-        marginBottom: 28,
-        fontFamily: fonts.body,
-    },
-    fields: { gap: 14 },
-    generalError: {
-        backgroundColor: 'rgba(236, 48, 19, 0.14)',
-        borderRadius: 10,
-        paddingVertical: 9,
-        paddingHorizontal: 12,
-    },
-    generalErrorText: { color: colors.accent300, fontSize: 12.5, fontFamily: fonts.body },
-    submit: { marginTop: 6 },
-    footer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: 2,
-        marginTop: 22,
-    },
-    footerText: { fontSize: 13, color: colors.text, fontFamily: fonts.body },
-});

@@ -1,99 +1,141 @@
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Button } from '@/src/components/Button';
 import { DateField } from '@/src/components/DateField';
 import { FormField } from '@/src/components/FormField';
 import { Input } from '@/src/components/Input';
-import { SegmentedControl } from '@/src/components/SegmentedControl';
+import { SegmentedControl, type SegmentOption } from '@/src/components/SegmentedControl';
 import { XIcon } from '@/src/components/icons';
-import type { AppContextValue } from '@/src/context/AppContext';
 import { catColor } from '@/src/data/categories';
-import { colors, fonts, radius } from '@/src/theme/colors';
+import { useTransactionFilters } from '@/src/hooks/useTransactionFilters';
+import type { FilterType } from '@/src/interfaces';
+import { colors } from '@/src/theme/colors';
+import { cn } from '@/src/utils/cn';
 
-export function FilterSheet({ store }: { store: AppContextValue }) {
+const TYPE_OPTIONS: SegmentOption<FilterType>[] = [
+  { value: 'all', label: 'Todas' },
+  { value: 'income', label: 'Receitas' },
+  { value: 'expense', label: 'Despesas' },
+];
+
+interface FilterSheetProps {
+  visible: boolean;
+  onClose: () => void;
+  /** Categorias disponíveis para filtrar. */
+  categories: string[];
+}
+
+function CategoryChip({
+  name,
+  selected,
+  onPress,
+}: {
+  name: string;
+  selected: boolean;
+  onPress: () => void;
+}) {
+  const color = catColor(name);
+
   return (
-    <Modal
-      visible={store.filtersOpen}
-      transparent
-      animationType="slide"
-      onRequestClose={store.toggleFilters}
+    <Pressable
+      onPress={onPress}
+      className={cn('rounded-pill border py-[3px] px-2.5', !selected && 'bg-transparent border-divider')}
+      // Cor da categoria é calculada em runtime.
+      style={selected ? { backgroundColor: color, borderColor: color } : undefined}
     >
-      <Pressable style={styles.backdrop} onPress={store.toggleFilters}>
-        <Pressable style={styles.sheet} onPress={(e) => e.stopPropagation()}>
-          <View style={styles.grabber} />
+      <Text className={cn('text-[11px]', selected ? 'text-app font-body-medium' : 'text-ink font-body')}>
+        {name}
+      </Text>
+    </Pressable>
+  );
+}
 
-          <View style={styles.header}>
-            <Text style={styles.title}>Filtros</Text>
-            <Pressable onPress={store.toggleFilters} hitSlop={8} style={styles.closeBtn}>
+export function FilterSheet({ visible, onClose, categories }: FilterSheetProps) {
+  const { filters, setFilter, toggleCategory, clearFilters } = useTransactionFilters();
+
+  return (
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <Pressable className="flex-1 justify-end bg-[rgba(0,0,0,0.55)]" onPress={onClose}>
+        <Pressable
+          className="max-h-[86%] bg-surface rounded-t-xl px-5 pt-2.5 pb-7"
+          onPress={(e) => e.stopPropagation()}
+        >
+          <View className="w-9 h-1 rounded-[2px] bg-divider self-center mb-3" />
+
+          <View className="flex-row items-center justify-between mb-3.5">
+            <Text className="font-heading text-[17px] text-ink">Filtros</Text>
+            <Pressable
+              onPress={onClose}
+              hitSlop={8}
+              className="w-[30px] h-[30px] rounded-sm items-center justify-center"
+            >
               <XIcon size={16} color={colors.text} />
             </Pressable>
           </View>
 
           <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={styles.sections}>
+            <View className="gap-3.5">
               <SegmentedControl
-                options={[
-                  { value: 'all', label: 'Todas' },
-                  { value: 'income', label: 'Receitas' },
-                  { value: 'expense', label: 'Despesas' },
-                ]}
-                value={store.filterType}
-                onChange={store.setFilterType}
+                options={TYPE_OPTIONS}
+                value={filters.type}
+                onChange={(type) => setFilter('type', type)}
               />
 
-              <View style={styles.chips}>
-                {store.distinctCategories.map((name) => {
-                  const selected = store.filterCategories.includes(name);
-                  const color = catColor(name);
-                  return (
-                    <Pressable
-                      key={name}
-                      onPress={() => store.toggleCategoryFilter(name)}
-                      style={[
-                        styles.chip,
-                        selected ? { backgroundColor: color, borderColor: color } : styles.chipUnselected,
-                      ]}
-                    >
-                      <Text style={[styles.chipLabel, selected && styles.chipLabelSelected]}>{name}</Text>
-                    </Pressable>
-                  );
-                })}
+              <View className="flex-row flex-wrap gap-1.5">
+                {categories.map((name) => (
+                  <CategoryChip
+                    key={name}
+                    name={name}
+                    selected={filters.categories.includes(name)}
+                    onPress={() => toggleCategory(name)}
+                  />
+                ))}
               </View>
 
-              <View style={styles.grid}>
-                <View style={styles.gridCell}>
-                  <DateField label="De" value={store.filterFrom} onChange={store.setFilterFrom} placeholder="Qualquer" />
+              <View className="flex-row flex-wrap gap-2.5">
+                <View className="w-[47%]">
+                  <DateField
+                    label="De"
+                    value={filters.from}
+                    onChange={(value) => setFilter('from', value)}
+                    placeholder="Qualquer"
+                  />
                 </View>
-                <View style={styles.gridCell}>
-                  <DateField label="Até" value={store.filterTo} onChange={store.setFilterTo} placeholder="Qualquer" />
+                <View className="w-[47%]">
+                  <DateField
+                    label="Até"
+                    value={filters.to}
+                    onChange={(value) => setFilter('to', value)}
+                    placeholder="Qualquer"
+                  />
                 </View>
-                <View style={styles.gridCell}>
+                <View className="w-[47%]">
                   <FormField label="Valor mín.">
                     <Input
                       placeholder="0"
                       keyboardType="decimal-pad"
-                      value={store.filterMin}
-                      onChangeText={store.setFilterMin}
+                      value={filters.min}
+                      onChangeText={(value) => setFilter('min', value)}
                     />
                   </FormField>
                 </View>
-                <View style={styles.gridCell}>
+                <View className="w-[47%]">
                   <FormField label="Valor máx.">
                     <Input
                       placeholder="0"
                       keyboardType="decimal-pad"
-                      value={store.filterMax}
-                      onChangeText={store.setFilterMax}
+                      value={filters.max}
+                      onChangeText={(value) => setFilter('max', value)}
                     />
                   </FormField>
                 </View>
               </View>
 
-              <View style={styles.actions}>
-                <Button variant="secondary" style={styles.flex1} onPress={store.clearFilters}>
+              <View className="flex-row gap-2.5 mt-1">
+                <Button variant="secondary" className="flex-1" onPress={clearFilters}>
                   Limpar
                 </Button>
-                <Button variant="primary" style={styles.flex1} onPress={store.toggleFilters}>
+                <Button variant="primary" className="flex-1" onPress={onClose}>
                   Aplicar
                 </Button>
               </View>
@@ -104,53 +146,3 @@ export function FilterSheet({ store }: { store: AppContextValue }) {
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.55)' },
-  sheet: {
-    maxHeight: '86%',
-    backgroundColor: colors.surface,
-    borderTopLeftRadius: radius.xl,
-    borderTopRightRadius: radius.xl,
-    paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 28,
-  },
-  grabber: {
-    width: 36,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: colors.divider,
-    alignSelf: 'center',
-    marginBottom: 12,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 14,
-  },
-  title: { fontFamily: fonts.heading, fontSize: 17, color: colors.text },
-  closeBtn: {
-    width: 30,
-    height: 30,
-    borderRadius: radius.sm,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  sections: { gap: 14 },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  chip: {
-    borderRadius: radius.pill,
-    borderWidth: 1,
-    paddingVertical: 3,
-    paddingHorizontal: 10,
-  },
-  chipUnselected: { backgroundColor: 'transparent', borderColor: colors.divider },
-  chipLabel: { fontSize: 11, color: colors.text, fontFamily: fonts.body },
-  chipLabelSelected: { color: colors.bg, fontFamily: fonts.bodyMedium },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  gridCell: { width: '47%' },
-  actions: { flexDirection: 'row', gap: 10, marginTop: 4 },
-  flex1: { flex: 1 },
-});

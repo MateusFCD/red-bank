@@ -1,8 +1,11 @@
 import { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, Text } from 'react-native';
+import { Animated, Text, View } from 'react-native';
 
-import { colors, fonts } from '@/src/theme/colors';
+import { colors } from '@/src/theme/colors';
 import { CheckCircleIcon } from '@/src/components/icons';
+
+/** `View` com suporte a `className` + valores `Animated` no `style`. */
+const AnimatedView = Animated.createAnimatedComponent(View);
 
 export function Toast({ message }: { message: string | null }) {
   const opacity = useRef(new Animated.Value(0)).current;
@@ -21,35 +24,14 @@ export function Toast({ message }: { message: string | null }) {
   if (!message) return null;
 
   return (
-    <Animated.View pointerEvents="none" style={styles.wrap}>
-      <Animated.View style={[styles.toast, { opacity, transform: [{ translateY }] }]}>
+    <AnimatedView pointerEvents="none" className="absolute top-[58px] left-0 right-0 z-80 items-center">
+      <AnimatedView
+        className="flex-row items-center gap-2 bg-ink px-4 py-2.5"
+        style={{ opacity, transform: [{ translateY }] }}
+      >
         <CheckCircleIcon size={16} color={colors.bg} />
-        <Text style={styles.text}>{message}</Text>
-      </Animated.View>
-    </Animated.View>
+        <Text className="text-app text-[13px] font-body-medium">{message}</Text>
+      </AnimatedView>
+    </AnimatedView>
   );
 }
-
-const styles = StyleSheet.create({
-  wrap: {
-    position: 'absolute',
-    top: 58,
-    left: 0,
-    right: 0,
-    zIndex: 80,
-    alignItems: 'center',
-  },
-  toast: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    backgroundColor: colors.text,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-  },
-  text: {
-    color: colors.bg,
-    fontSize: 13,
-    fontFamily: fonts.bodyMedium,
-  },
-});
